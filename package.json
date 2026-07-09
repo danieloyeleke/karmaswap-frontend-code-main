@@ -1,0 +1,25 @@
+{
+  "name": "karma-economy",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.13.4",
+    "@stomp/stompjs": "^7.3.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "axios": "^1.13.2",
+    "lucide-react": "^1.14.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.15.1",
+    "sockjs-client": "^1.6.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.2",
+    "vite": "^8.0.12"
+  }
+}
