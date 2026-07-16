@@ -75,19 +75,6 @@ body {
   display: none;
 }
 
-.mobile-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.mobile-karma-balance {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--primary);
-  white-space: nowrap;
-}
-
 .navbar {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -577,16 +564,14 @@ button {
 
 /* Password toggle */
 .input-password-wrap {
+  position: relative;
   display: flex;
   align-items: center;
-  position: relative;
-  width: 100%;
 }
 
 .input-password-wrap input {
   flex: 1;
-  min-width: 0;
-  padding-right: 56px;
+  padding-right: 60px;
 }
 
 .password-toggle {
@@ -599,8 +584,6 @@ button {
   color: var(--text-muted);
   cursor: pointer;
   padding: 0;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .password-toggle:hover {
@@ -614,20 +597,18 @@ button {
 
 .terms-label {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   font-size: 0.85rem;
   color: var(--text-secondary);
   cursor: pointer;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .terms-label input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
+  margin-top: 2px;
   accent-color: var(--color-primary);
-  margin: 0;
+  flex-shrink: 0;
 }
 
 /* Terms modal */
@@ -4370,18 +4351,19 @@ button {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 0.35rem;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.social-tabs::-webkit-scrollbar {
-  display: none;
+  flex-wrap: wrap;
 }
 
 .social-tab-btn {
-  flex-shrink: 0;
+  padding: 0.55rem 1.1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.875rem;
   white-space: nowrap;
 }
 
@@ -4985,70 +4967,157 @@ button {
 }
 
 @media (max-width: 768px) {
-  /* Compact mobile header */
-  .mobile-header {
-    padding: 0.5rem 1rem; /* was 0.75rem */
-    font-size: 1rem; /* was 1.1rem */
+  /* Show bottom tab bar */
+  .bottom-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 12px var(--shadow);
+    z-index: 200;
+    align-items: stretch;
   }
 
-  .nav-logo {
-    width: 28px;
-    height: 28px;
+  /* Hide top navbar on mobile */
+  .navbar {
+    display: none;
   }
 
-  /* Marketplace spacing */
-  .marketplace-container {
-    padding: 0.75rem 0.75rem 0; /* was 1rem */
+  /* Add bottom padding so content isn't hidden behind tab bar */
+  .main-content {
+    padding-bottom: 72px;
   }
 
-  .search-bar {
-    margin-bottom: 0.5rem; /* tighter gap between search and filters */
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+    padding: 0;
   }
 
-  .search-bar input {
-    padding: 10px 14px; /* slightly smaller on mobile */
-    font-size: 0.9rem;
+  .tab-btn.active {
+    color: var(--primary);
+  }
+
+  .tab-btn span {
+    font-size: 0.65rem;
+    line-height: 1;
+  }
+
+  /* Center List button — prominent green circle */
+  .tab-btn-center {
+    position: relative;
+    top: -16px;
+    background: var(--primary);
+    color: white;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    flex: 0 0 52px;
+    box-shadow: 0 4px 12px rgba(45, 122, 62, 0.4);
+    margin: 0 8px;
+  }
+
+  .tab-btn-center.active {
+    color: white;
+    background: var(--primary-hover);
+  }
+
+  .tab-btn-center span {
+    display: none; /* hide label on center button */
+  }
+
+  /* Profile avatar in tab bar */
+  .tab-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tab-btn.active .tab-avatar {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
 
   .category-filters {
-    gap: 0.4rem;
-    margin-bottom: 0.75rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* hide scrollbar Firefox */
+    padding-bottom: 4px;
+  }
+
+  .category-filters::-webkit-scrollbar {
+    display: none; /* hide scrollbar Chrome */
   }
 
   .filter-btn {
-    padding: 6px 12px; /* reduce side padding */
-    font-size: 0.8rem;
+    flex-shrink: 0; /* prevent buttons from shrinking */
   }
 
-  /* Empty state — single line */
-  .empty-state {
-    text-align: center;
-    padding: 2rem 1rem;
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
   }
 
-  .empty-state p,
-  .empty-state span {
-    display: inline; /* force onto one line */
+  .mobile-header {
+    justify-content: space-between;
   }
 
-  .empty-state p::after {
-    content: " ";
+  .mobile-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  /* My Trades title */
-  .trades-page h1,
-  .trades-page h2 {
-    font-size: 1.5rem; /* was likely 2rem+ */
+  .mobile-header-actions {
+    display: flex;
+    align-items: center;
   }
 
-  /* Social title */
-  .social-page-header h1,
-  .social-page-header h2 {
-    font-size: 1.5rem;
+  .main-content {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .marketplace-container {
+    padding-top: 1rem;
   }
 }
 
 /* Mid-size screens — compress navbar */
+
 @media (max-width: 900px) {
   .nav-menu button {
     padding: 0.625rem 0.75rem;
@@ -5076,6 +5145,7 @@ button {
 }
 
 /* Tablet — hide text labels, show icons only */
+
 @media (max-width: 820px) {
   .nav-menu button span,
   .nav-menu button {
@@ -5116,6 +5186,7 @@ button {
 }
 
 /* Suspension styles */
+
 .suspension-notice {
   padding: 1.25rem;
   background: #fee;
@@ -5169,19 +5240,19 @@ button {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 0.35rem;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.trades-tabs::-webkit-scrollbar {
-  display: none;
+  flex-wrap: wrap;
 }
 
 .trades-tab-btn {
-  flex-shrink: 0;
-  white-space: nowrap;
+  padding: 0.55rem 1.1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.875rem;
 }
 
 .trades-tab-btn:hover {
@@ -5419,8 +5490,6 @@ button {
     grid-column: 1 / -1;
   }
 }
-
-
 
 /* ── Trade Detail ── */
 
