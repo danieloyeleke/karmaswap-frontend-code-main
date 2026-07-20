@@ -75,6 +75,19 @@ body {
   display: none;
 }
 
+.mobile-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-karma-balance {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
 .navbar {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -564,14 +577,16 @@ button {
 
 /* Password toggle */
 .input-password-wrap {
-  position: relative;
   display: flex;
   align-items: center;
+  position: relative;
+  width: 100%;
 }
 
 .input-password-wrap input {
   flex: 1;
-  padding-right: 60px;
+  min-width: 0;
+  padding-right: 56px;
 }
 
 .password-toggle {
@@ -584,6 +599,8 @@ button {
   color: var(--text-muted);
   cursor: pointer;
   padding: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .password-toggle:hover {
@@ -597,18 +614,20 @@ button {
 
 .terms-label {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   font-size: 0.85rem;
   color: var(--text-secondary);
   cursor: pointer;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .terms-label input[type="checkbox"] {
-  margin-top: 2px;
-  accent-color: var(--color-primary);
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
+  accent-color: var(--color-primary);
+  margin: 0;
 }
 
 /* Terms modal */
@@ -2426,7 +2445,8 @@ button {
 
 @media (max-width: 640px) {
   .main-content {
-    padding: 0 1rem;
+    margin: 0 auto;
+    padding: 0 0.75rem;
   }
 
   .item-detail-hero,
@@ -4351,19 +4371,18 @@ button {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 0.35rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.social-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .social-tab-btn {
-  padding: 0.55rem 1.1rem;
-  border: none;
-  background: transparent;
-  color: var(--text-light);
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all var(--transition);
-  font-size: 0.875rem;
+  flex-shrink: 0;
   white-space: nowrap;
 }
 
@@ -4967,157 +4986,125 @@ button {
 }
 
 @media (max-width: 768px) {
-  /* Show bottom tab bar */
-  .bottom-tab-bar {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 64px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    box-shadow: 0 -2px 12px var(--shadow);
-    z-index: 200;
-    align-items: stretch;
-  }
-
-  /* Hide top navbar on mobile */
   .navbar {
     display: none;
   }
 
-  /* Add bottom padding so content isn't hidden behind tab bar */
-  .main-content {
-    padding-bottom: 72px;
-  }
-
-  .tab-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    border: none;
-    background: transparent;
-    color: var(--text-light);
-    font-size: 0.65rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition);
-    padding: 0;
-  }
-
-  .tab-btn.active {
-    color: var(--primary);
-  }
-
-  .tab-btn span {
-    font-size: 0.65rem;
-    line-height: 1;
-  }
-
-  /* Center List button — prominent green circle */
-  .tab-btn-center {
-    position: relative;
-    top: -16px;
-    background: var(--primary);
-    color: white;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    flex: 0 0 52px;
-    box-shadow: 0 4px 12px rgba(45, 122, 62, 0.4);
-    margin: 0 8px;
-  }
-
-  .tab-btn-center.active {
-    color: white;
-    background: var(--primary-hover);
-  }
-
-  .tab-btn-center span {
-    display: none; /* hide label on center button */
-  }
-
-  /* Profile avatar in tab bar */
-  .tab-avatar {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--primary);
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
+  /* Compact mobile header */
+  .mobile-header {
+    padding: 0.5rem 1rem;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    /* background: var(--surface);
+    border-bottom: 1px solid var(--border); */
   }
 
-  .tab-btn.active .tab-avatar {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+  .nav-logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .nav-content {
+    padding: 0 0.75rem;
+    gap: 0.5rem;
+  }
+
+  /* Marketplace spacing */
+  .marketplace-container {
+    padding: 0.75rem 0.75rem 0; /* was 1rem */
+  }
+
+  .search-bar {
+    margin-bottom: 0.5rem; /* tighter gap between search and filters */
+  }
+
+  .search-bar input {
+    padding: 10px 14px; /* slightly smaller on mobile */
+    font-size: 0.9rem;
   }
 
   .category-filters {
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* hide scrollbar Firefox */
-    padding-bottom: 4px;
+    scrollbar-width: none;
+    gap: 0.5rem;
+    padding-bottom: 2px; /* prevents scroll shadow clipping */
   }
 
   .category-filters::-webkit-scrollbar {
-    display: none; /* hide scrollbar Chrome */
+    display: none;
   }
 
   .filter-btn {
-    flex-shrink: 0; /* prevent buttons from shrinking */
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
   }
 
-  .mobile-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--primary);
+  /* Empty state — single line */
+  .empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
   }
 
-  .mobile-header {
-    justify-content: space-between;
+  .empty-state p,
+  .empty-state span {
+    display: inline; /* force onto one line */
   }
 
+  .empty-state p::after {
+    content: " ";
+  }
+
+  /* My Trades title */
+  .trades-page h1,
+  .trades-page h2 {
+    font-size: 1.5rem; /* was likely 2rem+ */
+  }
+
+  /* Social title */
+  .social-page-header h1,
+  .social-page-header h2 {
+    font-size: 1.5rem;
+  }
+
+  /* Fix logo + name alignment */
   .mobile-header-brand {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    line-height: 1;
   }
 
-  .mobile-header-actions {
-    display: flex;
-    align-items: center;
+  .mobile-header-brand .nav-logo {
+    display: block;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
   }
 
-  .main-content {
-    margin-top: 0;
-    padding-top: 0;
+  .mobile-header-brand span {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1;
   }
 
-  .marketplace-container {
-    padding-top: 1rem;
+  /* Tighten marketplace spacing */
+  .marketplace-header {
+    gap: 0.6rem; /* was 1.5rem */
+  }
+
+  .search-bar input {
+    padding: 8px 12px;
+    font-size: 0.875rem;
   }
 }
 
 /* Mid-size screens — compress navbar */
-
 @media (max-width: 900px) {
   .nav-menu button {
     padding: 0.625rem 0.75rem;
@@ -5145,7 +5132,6 @@ button {
 }
 
 /* Tablet — hide text labels, show icons only */
-
 @media (max-width: 820px) {
   .nav-menu button span,
   .nav-menu button {
@@ -5186,7 +5172,6 @@ button {
 }
 
 /* Suspension styles */
-
 .suspension-notice {
   padding: 1.25rem;
   background: #fee;
@@ -5240,19 +5225,19 @@ button {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 0.35rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.trades-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .trades-tab-btn {
-  padding: 0.55rem 1.1rem;
-  border: none;
-  background: transparent;
-  color: var(--text-light);
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all var(--transition);
-  font-size: 0.875rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .trades-tab-btn:hover {
@@ -7228,14 +7213,17 @@ button {
   font-weight: 700;
 }
 
-.activity-karma.earned { color: var(--color-success, #22c55e); }
-.activity-karma.spent  { color: var(--color-error,   #ef4444); }
+.activity-karma.earned {
+  color: var(--color-success, #22c55e);
+}
+.activity-karma.spent {
+  color: var(--color-error, #ef4444);
+}
 
 .activity-balance {
   font-size: 0.75rem;
   color: var(--text-muted);
 }
-
 
 /* ── Edit Profile Modal ── */
 
@@ -7975,7 +7963,9 @@ button {
 .detail-owner-card.clickable-user {
   cursor: pointer;
   position: relative;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
 .detail-owner-card.clickable-user:hover {
@@ -7995,7 +7985,9 @@ button {
   color: var(--text-muted);
   font-size: 1.1rem;
   opacity: 0;
-  transition: opacity 0.15s, transform 0.15s;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
 }
 
 .detail-owner-card.clickable-user:hover .detail-owner-arrow {
@@ -8268,7 +8260,7 @@ button {
 }
 
 .pp-listing-card:hover {
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 .pp-listing-image {
@@ -8431,7 +8423,6 @@ button.pp-follow-btn:disabled {
     justify-content: center;
   }
 }
-
 
 /* Trust Badge */
 .trust-badge.bronze {
