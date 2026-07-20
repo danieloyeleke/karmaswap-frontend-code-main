@@ -349,6 +349,9 @@ function AppContent() {
           <span>Karmaswap</span>
         </div>
         <div className="mobile-header-actions">
+          <span className="mobile-karma-balance">
+            ✨ {profile?.karmaBalance ?? profile?.karma_balance ?? 0}
+          </span>
           <NotificationBell />
         </div>
       </div>
