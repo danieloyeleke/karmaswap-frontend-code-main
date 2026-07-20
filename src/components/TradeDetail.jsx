@@ -13,6 +13,7 @@ import {
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { ShieldAlert } from "lucide-react";
+import "../styles/TradeDetail.css";
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 

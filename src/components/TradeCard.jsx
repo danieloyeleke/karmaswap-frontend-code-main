@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { acknowledgeEscrow } from "../api/escrow";
+import "../styles/TradeCard.css";
 
 const STATUS_LABELS = {
   ESCROW: "Karma Locked",

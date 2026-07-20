@@ -1,0 +1,131 @@
+/* ===============================
+   MY TRADES PAGE (MyTrades.jsx)
+   ================================= */
+
+.my-trades-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.my-trades-header h2 {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.my-trades-header p {
+  color: var(--text-light);
+}
+
+/* ── Tabs ── */
+
+.trades-tabs {
+  display: flex;
+  gap: 0.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.35rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.trades-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.trades-tab-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.trades-tab-btn:hover {
+  background: var(--background);
+  color: var(--text);
+}
+
+.trades-tab-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ── Content states ── */
+
+.trades-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.trades-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+  color: var(--text-light);
+}
+
+.trades-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.trades-empty p {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.trades-empty span {
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+/* ── List ── */
+
+.trades-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.trades-tab-btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.875rem;
+}
+
+/* shared loading spinner — see App.jsx extract */
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* shared error state */
+.error-message {
+  padding: 0.75rem;
+  background: #fee;
+  border: 1px solid var(--error);
+  border-radius: var(--radius-sm);
+  color: var(--error);
+  font-size: 0.875rem;
+  text-align: center;
+}

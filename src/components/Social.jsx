@@ -3,6 +3,7 @@ import api from "../api/axios";
 import { getItemById } from "../api/items";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import "../styles/Social.css";
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
