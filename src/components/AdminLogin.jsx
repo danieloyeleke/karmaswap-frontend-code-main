@@ -9,7 +9,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState(null);
-  const [debug, setDebug]       = useState(null); // shows raw /admin/me response
+  // const [debug, setDebug]       = useState(null); // shows raw /admin/me response
 
   const handleLogin = async () => {
     if (!email || !password) return;
