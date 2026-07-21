@@ -16,7 +16,7 @@ import CheckoutEscrowConfirmation from "./components/CheckoutEscrowConfirmation"
 import BuyerEscrowView from "./components/BuyerEscrowView";
 import Profile from "./components/Profile";
 import Social from "./components/Social";
-import SellerDashboard from "./components/SellerDashboard";
+import { SellerDashboard } from "./components/SellerDashboard";
 import TransactionComplete from "./components/TransactionComplete";
 import DisputeResolution from "./components/DisputeResolution";
 import AdminLogin from "./components/AdminLogin";
