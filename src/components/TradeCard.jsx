@@ -55,6 +55,24 @@ function useAbandonCountdown(trade, isSeller, status) {
   return chip;
 }
 
+function TradeCardImage({ imageUrl, title }) {
+  const [broken, setBroken] = useState(false);
+
+  return (
+    <div className="trade-card-image">
+      {imageUrl && !broken ? (
+        <img
+          src={imageUrl}
+          alt={title || "Trade item"}
+          onError={() => setBroken(true)}
+        />
+      ) : (
+        <div className="trade-card-image-placeholder">📦</div>
+      )}
+    </div>
+  );
+}
+
 export default function TradeCard({
   trade,
   currentUser,
@@ -77,7 +95,8 @@ export default function TradeCard({
   const terminal = isTerminal(status);
   const acknowledged = trade.acknowledged;
   const isAbandoned = status === "ABANDONED";
-  const isDisputed = String(trade.disputeStatus || "").toUpperCase() === "PENDING";
+  const isDisputed =
+    String(trade.disputeStatus || "").toUpperCase() === "PENDING";
 
   const abandonChip = useAbandonCountdown(trade, isSeller, status);
 
@@ -137,13 +156,7 @@ export default function TradeCard({
 
       <div className="trade-card-body">
         {/* Item image */}
-        <div className="trade-card-image">
-          {imageUrl ? (
-            <img src={imageUrl} alt={trade.itemTitle} />
-          ) : (
-            <div className="trade-card-image-placeholder">📦</div>
-          )}
-        </div>
+        <TradeCardImage imageUrl={imageUrl} title={trade.itemTitle} />
 
         {/* Info */}
         <div className="trade-card-info">
