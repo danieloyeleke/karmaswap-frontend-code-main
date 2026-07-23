@@ -5,14 +5,14 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import api from "../api/axios";
+import api, { normalizeToken } from "../api/axios";
 
 const AuthContext = createContext();
 
-const normalizeToken = (value) => {
-  if (!value || typeof value !== "string") return "";
-  return value.replace(/^Bearer\s+/i, "").trim();
-};
+// const normalizeToken = (value) => {
+//   if (!value || typeof value !== "string") return "";
+//   return value.replace(/^Bearer\s+/i, "").trim();
+// };
 
 const isTokenExpired = (token) => {
   try {
@@ -63,6 +63,7 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authReady, setAuthReady] = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const fetchProfile = useCallback(async (userData) => {
     if (!userData) {
@@ -98,42 +99,6 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    const loadSession = async () => {
-      const token = normalizeToken(localStorage.getItem("token"));
-      const storedUser = localStorage.getItem("user");
-
-      if (token && storedUser) {
-        if (isTokenExpired(token)) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          setLoading(false);
-          setAuthReady(true);
-          return;
-        }
-
-        try {
-          const userData = normalizeUser(JSON.parse(storedUser));
-          setUser(userData);
-          localStorage.setItem("token", token);
-          api.defaults.headers.common.Authorization = `Bearer ${token}`;
-          await fetchProfile(userData);
-        } catch (error) {
-          console.error("Failed to parse user:", error);
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          setUser(null);
-          setProfile(null);
-        }
-      }
-
-      setAuthReady(true);
-      setLoading(false);
-    };
-
-    loadSession();
-  }, [fetchProfile]);
-
-  useEffect(() => {
     if (!user) return;
 
     const handleVisibilityChange = () => {
@@ -147,6 +112,54 @@ export function AuthProvider({ children }) {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [user, fetchProfile]);
 
+  useEffect(() => {
+    const loadSession = async () => {
+      const expiredMessage = sessionStorage.getItem("sessionExpiredMessage");
+      if (expiredMessage) {
+        setSessionExpired(true);
+        sessionStorage.removeItem("sessionExpiredMessage");
+      }
+
+      const storedToken = localStorage.getItem("token");
+      const storedRefreshToken = localStorage.getItem("refreshToken");
+      const storedUser = localStorage.getItem("user");
+
+      if (!storedToken || !storedUser) {
+        setAuthReady(true);
+        setLoading(false);
+        return;
+      }
+
+      if (isTokenExpired(storedToken) && !storedRefreshToken) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setAuthReady(true);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const token = normalizeToken(storedToken);
+        const userData = normalizeUser(JSON.parse(storedUser));
+        setUser(userData);
+        api.defaults.headers.common.Authorization = `Bearer ${token}`;
+        await fetchProfile(userData);
+      } catch (error) {
+        console.error("Failed to parse user:", error);
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        setUser(null);
+        setProfile(null);
+      } finally {
+        setAuthReady(true);
+        setLoading(false);
+      }
+    };
+
+    loadSession();
+  }, [fetchProfile]);
+
   const persistSession = async (responseData, fallbackEmail = "") => {
     const rawToken =
       responseData?.token ||
@@ -154,24 +167,26 @@ export function AuthProvider({ children }) {
       responseData?.jwt ||
       (typeof responseData === "string" ? responseData : "");
     const token = normalizeToken(rawToken);
+    const refreshToken = responseData?.refreshToken || "";
     const userData = normalizeUser(
       responseData.user || {
         email: responseData.email || fallbackEmail,
-        id: responseData.id || responseData.userId, // ← add responseData.id
+        id: responseData.id || responseData.userId,
         username: responseData.username || "",
       },
     );
-
     if (!token)
       return { success: false, error: "No authentication token received" };
 
     localStorage.setItem("token", token);
+    if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
     localStorage.setItem("user", JSON.stringify(userData));
+
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
     setUser(userData);
+    setSessionExpired(false);
     await fetchProfile(userData);
     setAuthReady(true);
-
     return { success: true, data: responseData };
   };
 
@@ -219,8 +234,17 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (refreshToken) {
+      try {
+        await api.post("/auth/logout", { refreshToken });
+      } catch {
+        // ignore — clear local session regardless of backend result
+      }
+    }
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
     delete api.defaults.headers.common.Authorization;
     setUser(null);
@@ -302,8 +326,10 @@ export function AuthProvider({ children }) {
         loading,
         signIn,
         signUp,
-        requestPasswordReset,
         logout,
+        sessionExpired,
+        setSessionExpired,
+        requestPasswordReset,
         signInWithGoogle,
         refreshProfile: () => fetchProfile(user),
         authReady,
