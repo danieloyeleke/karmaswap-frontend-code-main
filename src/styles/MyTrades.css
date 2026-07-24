@@ -40,6 +40,16 @@
 .trades-tab-btn {
   flex-shrink: 0;
   white-space: nowrap;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
 }
 
 .trades-tab-btn:hover {
@@ -97,16 +107,18 @@
 }
 
 .trades-tab-btn {
-  flex: 1;
-  padding: 0.6rem 1rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0.6rem 1.1rem;
   border: none;
   background: transparent;
   color: var(--text-light);
+  font: inherit;
   font-weight: 600;
+  font-size: 0.875rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition);
-  font-size: 0.875rem;
 }
 
 /* shared loading spinner — see App.jsx extract */

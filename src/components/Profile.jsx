@@ -1060,7 +1060,7 @@ export default function Profile({ activeOrder, onOpenOrderTracking }) {
                             {isEarned ? "From" : "To"}: {entry.counterparty}
                           </span>
                         )}
-                      {entry.counterparty === "system" && (
+                      {entry.counterparty?.toLowerCase() === "system" && (
                         <span className="activity-counterparty">Karmaswap</span>
                       )}
 

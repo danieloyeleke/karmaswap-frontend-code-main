@@ -215,15 +215,27 @@
 }
 
 .social-feed-item-icon {
-  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
 }
 
 .social-feed-item-icon img {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
+}
+
+.social-feed-item,
+.social-feed-item-info,
+.social-feed-meta {
+  min-width: 0;
 }
 
 .social-feed-item-info strong {

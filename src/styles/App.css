@@ -4981,14 +4981,120 @@ button {
 }
 
 /* ── Bottom Tab Bar ── */
-
 .bottom-tab-bar {
-  display: none;
+  display: none; /* shown only on mobile via media query below */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 8px var(--shadow);
+  padding: 0.5rem 0.25rem;
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+}
+
+.tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: color var(--transition);
+  flex: 1;
+}
+
+.tab-btn span {
+  line-height: 1;
+}
+
+.tab-btn.active {
+  color: var(--primary);
+}
+
+/* Center "List" button — floating green circle, per spec */
+.tab-btn-center {
+  position: relative;
+  top: -1px;
+}
+
+.tab-btn-center svg {
+  background: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  padding: 12px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 10px var(--shadow);
+  transition: background var(--transition);
+}
+
+.tab-btn-center:hover svg,
+.tab-btn-center.active svg {
+  background: var(--primary-hover);
+}
+
+.tab-btn-center span:last-child {
+  margin-top: 4px;
+  color: var(--text-light);
+}
+
+/* Avatar circle in Profile tab */
+.tab-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-btn.active .tab-avatar {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Red dot indicator wrapper, reused from desktop notification bell pattern */
+.nav-btn-indicator-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.nav-red-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: var(--error);
+  border-radius: 50%;
+  border: 1.5px solid var(--surface);
 }
 
 @media (max-width: 768px) {
   .navbar {
     display: none;
+  }
+
+  .bottom-tab-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center; /* was flex-end — center now that nothing floats above the row */
+  }
+
+  .main-content /* or whatever your actual content wrapper class is */ {
+    padding-bottom: 72px;
   }
 
   /* Compact mobile header */
@@ -5229,6 +5335,44 @@ button {
 
 .suspension-contact a {
   color: var(--primary);
+}
+
+/* For session expired */
+.session-expired-notice {
+  padding: 1.25rem;
+  background: var(--primary-light);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  text-align: center;
+  position: relative;
+}
+
+.session-expired-notice h3 {
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.session-expired-notice p {
+  font-size: 0.875rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.session-expired-dismiss {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 4px;
+}
+
+.session-expired-dismiss:hover {
+  color: var(--text);
 }
 
 /* ── My Trades Page ── */

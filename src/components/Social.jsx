@@ -287,6 +287,26 @@ function Avatar({ user, size = "md" }) {
   );
 }
 
+// ─── FEED ITEM ICON (with broken-image fallback) ────────────────────────────
+
+function FeedItemIcon({ item, icon = "📦" }) {
+  const [broken, setBroken] = useState(false);
+  if (item?.imageUrl && !broken) {
+    return (
+      <img
+        src={item.imageUrl}
+        alt={item.title || "Item"}
+        onError={() => setBroken(true)}
+      />
+    );
+  }
+  return (
+    <span role="img" aria-label="item">
+      {icon}
+    </span>
+  );
+}
+
 // ─── FEED CARD ───────────────────────────────────────────────────────────────
 
 function FeedCard({ activity, onItemClick }) {
@@ -334,36 +354,35 @@ function FeedCard({ activity, onItemClick }) {
           {icon} {label}
         </span>
       </div>
-      {hasItem && (
+      {(hasItem || parsedItemName) && (
         <div
-          className="social-feed-item social-feed-item-clickable"
-          onClick={() => onItemClick?.(activity.item.id)}
-          role="button"
-          tabIndex={0}
+          className={`social-feed-item ${hasItem ? "social-feed-item-clickable" : ""}`}
+          onClick={hasItem ? () => onItemClick?.(activity.item.id) : undefined}
+          role={hasItem ? "button" : undefined}
+          tabIndex={hasItem ? 0 : undefined}
         >
           <div className="social-feed-item-icon">
-            {activity.item.imageUrl ? (
-              <img src={activity.item.imageUrl} alt={activity.item.title} />
-            ) : (
-              "📦"
+            <FeedItemIcon item={activity.item} icon={icon} />
+          </div>
+          <div className="social-feed-item-info">
+            <strong>{activity.item?.title || parsedItemName}</strong>
+            {(activity.item?.category || activity.item?.karmaValue) && (
+              <span>
+                {activity.item?.category}
+                {activity.item?.category && activity.item?.karmaValue
+                  ? " · "
+                  : ""}
+                {activity.item?.karmaValue
+                  ? `✨ ${activity.item.karmaValue} Karma`
+                  : ""}
+              </span>
             )}
           </div>
-          <div className="social-feed-item-info">
-            <strong>{activity.item.title}</strong>
-            <span>
-              {activity.item.category} · ✨ {activity.item.karmaValue} Karma
-            </span>
-          </div>
-          <span className="social-feed-item-arrow">→</span>
+          {hasItem && <span className="social-feed-item-arrow">→</span>}
         </div>
       )}
-      {!hasItem && parsedItemName && (
-        <div className="social-feed-item">
-          <div className="social-feed-item-icon">{icon}</div>
-          <div className="social-feed-item-info">
-            <strong>{parsedItemName}</strong>
-          </div>
-        </div>
+      {activity.description && !parsedItemName && !hasItem && (
+        <p className="social-feed-description">{activity.description}</p>
       )}
       {activity.description && !parsedItemName && (
         <p className="social-feed-description">{activity.description}</p>

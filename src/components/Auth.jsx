@@ -138,7 +138,14 @@ export default function Auth() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
 
-  const { signIn, signUp, signInWithGoogle, requestPasswordReset } = useAuth();
+  const {
+    signIn,
+    signUp,
+    signInWithGoogle,
+    requestPasswordReset,
+    sessionExpired,
+    setSessionExpired,
+  } = useAuth();
 
   const switchToLoginWithEmail = (registeredEmail) => {
     setPassword("");
@@ -179,6 +186,8 @@ export default function Auth() {
     e.preventDefault();
     setError("");
     setMessage("");
+    setSuspended(false);
+    setSuspensionReason("");
     setLoading(true);
 
     const trimmedEmail = email.trim();
@@ -515,6 +524,21 @@ export default function Auth() {
                 <a href="mailto:support@karmaswap.com">support@karmaswap.com</a>{" "}
                 to appeal.
               </p>
+            </div>
+          )}
+
+          {sessionExpired && (
+            <div className="session-expired-notice">
+              <button
+                type="button"
+                className="session-expired-dismiss"
+                onClick={() => setSessionExpired(false)}
+                aria-label="Dismiss"
+              >
+                ×
+              </button>
+              <h3>Session Expired</h3>
+              <p>Your session has ended. Please log in again to continue.</p>
             </div>
           )}
 
