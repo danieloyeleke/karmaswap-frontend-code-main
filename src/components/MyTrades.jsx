@@ -8,6 +8,7 @@ import {
   getTradeHistory,
 } from "../api/escrow";
 import TradeCard from "./TradeCard";
+import "../styles/MyTrades.css";
 
 const TABS = [
   { id: "active", label: "Active Trades" },

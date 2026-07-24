@@ -22,6 +22,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;   /* ← add this */
   gap: 0.15rem;
 }
 
@@ -192,7 +193,8 @@
 
 .trade-abandon-chip {
   display: inline-flex;
-  align-items: center;
+  align-self: flex-start;
+  width: fit-content;
   gap: 0.35rem;
   font-size: 0.72rem;
   font-weight: 700;
