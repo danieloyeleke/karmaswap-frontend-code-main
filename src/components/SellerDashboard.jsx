@@ -45,7 +45,7 @@ const statusMeta = (status) => {
     normalized.includes("COMPLETE") ||
     normalized.includes("FUNDS_RELEASED")
   ) {
-    return { label: "Completed", tone: "complete" };                         
+    return { label: "Completed", tone: "complete" };
   }
   if (normalized.includes("DELIVER"))
     return { label: "Delivered", tone: "progress" };
