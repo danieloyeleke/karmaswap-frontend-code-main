@@ -493,7 +493,7 @@ function AppContent() {
           onClick={() => navigate("/list-item")}
         >
           <Plus size={24} />
-          <span>List</span>
+          {/* <span>List</span> */}
         </button>
         <button
           className={`tab-btn ${currentPath.startsWith("/trades") ? "active" : ""}`}
