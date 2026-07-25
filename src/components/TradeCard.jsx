@@ -149,10 +149,35 @@ export default function TradeCard({
       className={`trade-card ${isSeller ? "trade-selling" : "trade-buying"} ${isAbandoned ? "trade-abandoned" : ""}`}
       onClick={onClick}
     >
-      {/* Role tag */}
-      <span className={`trade-role-tag ${isSeller ? "selling" : "buying"}`}>
-        {isSeller ? "Selling" : "Buying"}
-      </span>
+      <div className="trade-card-header">
+        <span className={`trade-role-tag ${isSeller ? "selling" : "buying"}`}>
+          {isSeller ? "Selling" : "Buying"}
+        </span>
+
+        <div
+          className="trade-card-status-slot"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {terminal && !acknowledged && (
+            <button
+              className="btn-secondary trade-ack-btn"
+              onClick={handleAcknowledge}
+              disabled={acknowledging}
+            >
+              {acknowledging ? "..." : "Acknowledge"}
+            </button>
+          )}
+          {!terminal && ctaLabel && (
+            <button
+              className={`trade-cta-btn ${ctaDisabled ? "disabled" : isSeller ? "seller-cta" : "buyer-cta"}`}
+              disabled={ctaDisabled}
+              onClick={onClick}
+            >
+              {ctaLabel}
+            </button>
+          )}
+        </div>
+      </div>
 
       <div className="trade-card-body">
         {/* Item image */}
@@ -194,28 +219,6 @@ export default function TradeCard({
             >
               ⚠️ {abandonChip.label}
             </span>
-          )}
-        </div>
-
-        {/* CTA */}
-        <div className="trade-card-action" onClick={(e) => e.stopPropagation()}>
-          {terminal && !acknowledged && (
-            <button
-              className="btn-secondary trade-ack-btn"
-              onClick={handleAcknowledge}
-              disabled={acknowledging}
-            >
-              {acknowledging ? "..." : "Acknowledge"}
-            </button>
-          )}
-          {!terminal && ctaLabel && (
-            <button
-              className={`trade-cta-btn ${ctaDisabled ? "disabled" : isSeller ? "seller-cta" : "buyer-cta"}`}
-              disabled={ctaDisabled}
-              onClick={onClick}
-            >
-              {ctaLabel}
-            </button>
           )}
         </div>
       </div>

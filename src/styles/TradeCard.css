@@ -26,6 +26,18 @@
   gap: 0.15rem;
 }
 
+.trade-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.trade-card-status-slot {
+  flex-shrink: 0;
+}
+
 /* Selling — amber left border */
 .trade-selling {
   border-left: 4px solid #f4a261;
@@ -71,7 +83,7 @@
 
 .trade-card-body {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr) auto;
+  grid-template-columns: 72px minmax(0, 1fr);
   gap: 1rem;
   align-items: center;
 }
@@ -220,7 +232,7 @@
 }
 
 .trade-cta-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.5rem;
   border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: 0.8rem;
@@ -261,6 +273,7 @@
   
   .trade-card-body {
     grid-template-columns: 56px minmax(0, 1fr);
+    gap: 1.1rem;              /* was inheriting 1rem, bump slightly */
   }
 
   .trade-card-action {
@@ -278,6 +291,15 @@
 
   .trade-abandoned-notice {
     font-size: 0.74rem;
+  }
+
+  .trade-card-image {
+    width: 56px;
+    height: 56px;
+  }
+
+  .trade-card-info {
+    padding-top: 0.1rem;      /* nudges text baseline off the image top edge */
   }
 }
 
