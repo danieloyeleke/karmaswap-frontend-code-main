@@ -1,0 +1,381 @@
+/* =========================================================================
+   Extracted for: DailyRewards.jsx (default export), RewardCard, StreakDots
+   Every class below is used by this component; nothing here is unused.
+   Design tokens used (--primary, --primary-hover, --primary-light,
+   --surface, --border, --text, --text-light, --error, --radius,
+   --radius-lg, --shadow, --transition) are all defined in your :root
+   block — no missing-variable issues for this component.
+   ========================================================================= */
+
+:root {
+  --primary: #2d7a3e;
+  --primary-hover: #246330;
+  --primary-light: #e8f5e9;
+  --text: #2c3e50;
+  --text-light: #6c757d;
+  --border: #e0e0e0;
+  --surface: #ffffff;
+  --background: #fafafa;
+  --error: #e74c3c;
+  --shadow: rgba(0, 0, 0, 0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --transition: 0.2s ease;
+}
+
+/* ── Reused generic message style (also used elsewhere in the app) ── */
+
+.error-message {
+  padding: 0.75rem;
+  background: #fee;
+  border: 1px solid var(--error);
+  border-radius: var(--radius);
+  color: var(--error);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* ── Daily Rewards Panel ── */
+
+.dr-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: 0 4px 12px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Header ── */
+
+.dr-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.dr-header-text {
+  flex: 1;
+}
+
+.dr-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.dr-header-text h2 {
+  font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  line-height: 1.2;
+}
+
+.dr-header-text p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ── Streak Badge ── */
+
+.dr-streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: #1d4732;
+  color: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(29, 71, 50, 0.25);
+  min-width: 140px;
+}
+
+.dr-flame {
+  color: #f4a261;
+  flex-shrink: 0;
+}
+
+.dr-streak-badge strong {
+  display: block;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.dr-streak-badge span {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Success message ── */
+
+.dr-success {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--primary-light);
+  border: 1px solid #b5d7bb;
+  border-radius: var(--radius);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* ── Progress ── */
+
+.dr-progress-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.dr-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.dr-progress-header strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.dr-progress-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.dr-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f4a261 0%, var(--primary) 100%);
+  transition: width 0.4s ease;
+}
+
+/* ── Streak Dots ── */
+
+.dr-streak-dots {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: space-between;
+}
+
+.dr-streak-dot {
+  flex: 1;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--text-light);
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.dr-streak-dot.filled {
+  background: var(--primary);
+  color: white;
+}
+
+.dr-streak-dot.current {
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* ── Cards ── */
+
+.dr-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.dr-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition);
+}
+
+.dr-card-available {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.dr-card-available:hover {
+  box-shadow: 0 6px 18px rgba(45, 122, 62, 0.15);
+  transform: translateY(-2px);
+}
+
+.dr-card-claimed {
+  opacity: 0.7;
+}
+
+.dr-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+.dr-card-available .dr-card-icon {
+  background: white;
+  border-color: var(--primary);
+}
+
+.dr-card-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+}
+
+.dr-card-reward {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.dr-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text);
+}
+
+.dr-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  line-height: 1.5;
+  flex: 1;
+  margin: 0;
+}
+
+.dr-card-btn {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.dr-card-btn:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.dr-card-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.dr-card-btn-claimed {
+  background: var(--background);
+  color: var(--text-light);
+  border: 1px solid var(--border);
+}
+
+.dr-card-btn-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.dr-card-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.dr-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .dr-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .dr-streak-badge {
+    min-width: unset;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dr-header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .dr-panel {
+    padding: 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .dr-streak-dots {
+    gap: 0.25rem;
+  }
+
+  .dr-streak-dot {
+    height: 24px;
+    font-size: 0.65rem;
+  }
+
+  .dr-card-reward {
+    font-size: 1.35rem;
+  }
+}

@@ -1962,10 +1962,6 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .profile-tabs {
-    flex-direction: column;
-  }
-
   .form-row {
     grid-template-columns: 1fr;
   }
@@ -6820,39 +6816,6 @@ button {
 /* ── Header Actions ── */
 
 /* ── Tabs ── */
-
-.profile-tabs {
-  display: flex;
-  gap: 0.4rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.35rem;
-}
-
-.profile-tabs button {
-  flex: 1;
-  padding: 0.6rem 1rem;
-  border: none;
-  background: transparent;
-  color: var(--text-light);
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all var(--transition);
-  font-size: 0.875rem;
-}
-
-.profile-tabs button:hover {
-  background: var(--background);
-  color: var(--text);
-}
-
-.profile-tabs button.active {
-  background: var(--primary);
-  color: white;
-}
-
 .profile-header-name-actions {
   display: flex;
   gap: 0.5rem;
@@ -7535,34 +7498,9 @@ button {
 }
 
 /* ── Streak Badge ── */
-
-.dr-streak-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1.25rem;
-  background: #1d4732;
-  color: white;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(29, 71, 50, 0.25);
-  min-width: 140px;
-}
-
 .dr-flame {
   color: #f4a261;
   flex-shrink: 0;
-}
-
-.dr-streak-badge strong {
-  display: block;
-  font-size: 1.75rem;
-  line-height: 1;
-}
-
-.dr-streak-badge span {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.75);
 }
 
 /* ── Success message ── */

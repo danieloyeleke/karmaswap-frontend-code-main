@@ -447,14 +447,6 @@
   }
 }
 
-/* ⚠️ Referenced by .profile-tabs at 768px in the original file's early
-   responsive block (bundled with unrelated nav/marketplace rules there) */
-@media (max-width: 768px) {
-  .profile-tabs {
-    flex-direction: column;
-  }
-}
-
 /* ── "My Trades" empty state, reused for empty listings/claimed tabs ── */
 
 .trades-empty {
@@ -938,6 +930,11 @@
   .item-edit-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  .profile-tabs button {
+    padding: 0.55rem 0.4rem;
+    font-size: 0.72rem;
+  }
 }
 
 /* ── Referral Card ──
@@ -1056,7 +1053,7 @@
   }
 
   .referral-link-text {
-    white-space: nowrap;      /* was: normal + word-break */
+    white-space: nowrap; /* was: normal + word-break */
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -1067,7 +1064,7 @@
     text-align: center;
   }
 
-  .referral-link-actions{
+  .referral-link-actions {
     display: flex;
     gap: 1rem;
     justify-content: space-between;
