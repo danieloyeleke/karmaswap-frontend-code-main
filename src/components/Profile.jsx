@@ -9,6 +9,7 @@ import {
   buildLocation,
   parseLocation,
 } from "../utils/nigeriaLocations";
+import "../styles/Profile.css";
 
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 
@@ -52,7 +53,6 @@ const normalizeList = (data) => {
   if (Array.isArray(data?.data)) return data.data;
   return [];
 };
-
 
 // ─── EDIT PROFILE MODAL ──────────────────────────────────────────────────────
 
@@ -328,12 +328,14 @@ function ReferralCard({ referralCode }) {
         <span className="referral-link-text" title={referralLink}>
           {referralLink}
         </span>
-        <button className="referral-copy-btn" onClick={handleCopy}>
-          {copied ? "Copied ✓" : "Copy"}
-        </button>
-        <button className="referral-share-btn" onClick={handleShare}>
-          Share
-        </button>
+        <div className="referral-link-actions">
+          <button className="referral-copy-btn" onClick={handleCopy}>
+            {copied ? "Copied ✓" : "Copy"}
+          </button>
+          <button className="referral-share-btn" onClick={handleShare}>
+            Share
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -669,18 +671,20 @@ export default function Profile({ activeOrder, onOpenOrderTracking }) {
               <h1 onClick={() => navigate(`/profile/${username}`)}>
                 {username}
               </h1>
-              <button
-                className="profile-edit-btn"
-                onClick={() => setShowEditModal(true)}
-              >
-                ✏️ Edit Profile
-              </button>
-              <button
-                className="profile-edit-btn profile-transfer-btn"
-                onClick={() => setShowTransferModal(true)}
-              >
-                ✨ Transfer Karma
-              </button>
+              <div className="profile-header-actions-row">
+                <button
+                  className="profile-edit-btn"
+                  onClick={() => setShowEditModal(true)}
+                >
+                  ✏️ Edit Profile
+                </button>
+                <button
+                  className="profile-edit-btn profile-transfer-btn"
+                  onClick={() => setShowTransferModal(true)}
+                >
+                  ✨ Transfer Karma
+                </button>
+              </div>
             </div>
             {fullName && <p className="profile-fullname">{fullName}</p>}
             {location && (
