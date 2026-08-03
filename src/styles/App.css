@@ -4980,11 +4980,114 @@ button {
 
 .bottom-tab-bar {
   display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 8px var(--shadow);
+  padding: 0.25rem 0.25rem;
+  padding-bottom: calc(0.25rem + env(safe-area-inset-bottom));
+}
+
+.tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  transition: color var(--transition);
+  flex: 1;
+}
+
+.tab-btn span {
+  line-height: 1;
+}
+
+.tab-btn.active {
+  color: var(--primary);
+}
+
+/* Center "List" button */
+.tab-btn-center {
+  position: relative;
+  top: 0;
+}
+
+.tab-btn-center svg {
+  background: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px var(--shadow);
+  transition: background var(--transition);
+}
+
+.tab-btn-center:hover svg,
+.tab-btn-center.active svg {
+  background: var(--primary-hover);
+}
+
+.tab-btn-center span:last-child {
+  margin-top: 2px;
+  color: var(--text-light);
+}
+
+/* Avatar circle in Profile tab */
+.tab-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-btn.active .tab-avatar {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Red dot indicator wrapper */
+.nav-btn-indicator-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.nav-red-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: var(--error);
+  border-radius: 50%;
+  border: 1.5px solid var(--surface);
 }
 
 @media (max-width: 768px) {
   .navbar {
     display: none;
+  }
+
+  .bottom-tab-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
   }
 
   /* Compact mobile header */

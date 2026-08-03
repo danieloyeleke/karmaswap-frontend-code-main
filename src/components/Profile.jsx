@@ -627,9 +627,13 @@ export default function Profile({ activeOrder, onOpenOrderTracking }) {
     "http://localhost:8080";
 
   const normalizeUrl = (url) => {
-    if (!url) return null;
+    if (!url) return "";
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    return `${API_ORIGIN}/uploads/${url}`;
+
+    // strip any leading slash, then strip a leading "uploads/" if the backend already included it
+    const cleaned = url.replace(/^\/+/, "").replace(/^uploads\//, "");
+
+    return `${API_ORIGIN}/uploads/${cleaned}`;
   };
 
   const avatarUrl = resolvedProfile?.avatarUrl;
