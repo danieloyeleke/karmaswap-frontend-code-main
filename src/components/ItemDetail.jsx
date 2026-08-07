@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import TrustBadge from "./TrustBadge";
 import { useNavigate } from "react-router-dom";
+import "../styles/ItemDetail.css";
 
 const DELIVERY_METHODS = [
   {
