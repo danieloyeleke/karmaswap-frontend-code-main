@@ -14,6 +14,7 @@ import {
   Trash2,
 } from "lucide-react";
 import api from "../api/axios";
+import "../styles/Notifications.css";
 
 const TYPE_ICONS = {
   TRADE_STARTED: Package,

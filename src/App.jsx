@@ -262,6 +262,12 @@ function AppContent() {
     return shippingPatch;
   }
 
+  const handleLogout = async () => {
+    if (!window.confirm("Log out of Karmaswap?")) return;
+    await logout();
+    navigate("/");
+  };
+
   if (loading) {
     return (
       <div className="app-loading">
@@ -352,6 +358,13 @@ function AppContent() {
             ✨ {profile?.karmaBalance ?? profile?.karma_balance ?? 0}
           </span>
           <NotificationBell />
+          <button
+            className="header-logout-btn"
+            onClick={handleLogout}
+            aria-label="Log out"
+          >
+            <LogOut size={20} />
+          </button>
         </div>
       </div>
 

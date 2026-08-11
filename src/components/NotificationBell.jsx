@@ -11,8 +11,10 @@ import {
   Gift,
   MessageCircle,
   ShieldAlert,
+  X
 } from "lucide-react";
 import api from "../api/axios";
+import "../styles/NotificationBell.css";
 
 const TYPE_ICONS = {
   TRADE_STARTED: Package,
@@ -181,58 +183,74 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="notif-dropdown">
-          <div className="notif-dropdown-header">
-            <span>Notifications</span>
-            {unreadCount > 0 && (
-              <button className="notif-mark-all" onClick={handleMarkAllAsRead}>
-                Mark all as read
-              </button>
-            )}
-          </div>
+        <>
+          <div className="notif-mobile-backdrop" onClick={handleToggle} />
 
-          <div className="notif-dropdown-list">
-            {loading ? (
-              <div className="notif-empty">Loading...</div>
-            ) : notifications.length === 0 ? (
-              <div className="notif-empty">
-                <p>No notifications yet</p>
-                <span>We'll let you know when something happens.</span>
-              </div>
-            ) : (
-              notifications.map((notification) => {
-                const Icon = getIcon(notification.type);
-                const iconClass = getIconClass(notification.type);
-                const clickable = !!resolveNavigation(notification);
-                return (
-                  <div
-                    key={notification.id}
-                    className={`notif-item ${!notification.read ? "unread" : ""} ${clickable ? "clickable" : ""}`}
-                    onClick={() => handleNotificationClick(notification)}
+          <div className="notif-dropdown">
+            <div className="notif-dropdown-header">
+              <span>Notifications</span>
+              <div className="notif-header-actions">
+                {unreadCount > 0 && (
+                  <button
+                    className="notif-mark-all"
+                    onClick={handleMarkAllAsRead}
                   >
-                    <div className={`notif-item-icon ${iconClass}`}>
-                      <Icon size={18} />
-                    </div>
-                    <div className="notif-item-content">
-                      <p className="notif-item-title">{notification.title}</p>
-                      <p className="notif-item-message">
-                        {notification.message}
-                      </p>
-                      <p className="notif-item-time">
-                        {formatTime(notification.createdAt)}
-                      </p>
-                    </div>
-                    {!notification.read && <span className="notif-dot" />}
-                  </div>
-                );
-              })
-            )}
-          </div>
+                    Mark all as read
+                  </button>
+                )}
+                <button
+                  className="notif-close-btn"
+                  onClick={handleToggle}
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
 
-          <div className="notif-dropdown-footer" onClick={handleViewAll}>
-            View all
+            <div className="notif-dropdown-list">
+              {loading ? (
+                <div className="notif-empty">Loading...</div>
+              ) : notifications.length === 0 ? (
+                <div className="notif-empty">
+                  <p>No notifications yet</p>
+                  <span>We'll let you know when something happens.</span>
+                </div>
+              ) : (
+                notifications.map((notification) => {
+                  const Icon = getIcon(notification.type);
+                  const iconClass = getIconClass(notification.type);
+                  const clickable = !!resolveNavigation(notification);
+                  return (
+                    <div
+                      key={notification.id}
+                      className={`notif-item ${!notification.read ? "unread" : ""} ${clickable ? "clickable" : ""}`}
+                      onClick={() => handleNotificationClick(notification)}
+                    >
+                      <div className={`notif-item-icon ${iconClass}`}>
+                        <Icon size={18} />
+                      </div>
+                      <div className="notif-item-content">
+                        <p className="notif-item-title">{notification.title}</p>
+                        <p className="notif-item-message">
+                          {notification.message}
+                        </p>
+                        <p className="notif-item-time">
+                          {formatTime(notification.createdAt)}
+                        </p>
+                      </div>
+                      {!notification.read && <span className="notif-dot" />}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="notif-dropdown-footer" onClick={handleViewAll}>
+              View all
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
