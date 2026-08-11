@@ -5164,6 +5164,16 @@ button {
     padding: 8px 12px;
     font-size: 0.875rem;
   }
+
+  .page-content,          /* swap for your actual wrapper class(es) */
+  .marketplace-container,
+  .social-page-wrapper,
+  .trade-detail-page,
+  .item-detail-page,
+  .profile-container,
+  .list-item-page {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
 }
 
 /* Mid-size screens — compress navbar */
