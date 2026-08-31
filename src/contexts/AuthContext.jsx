@@ -9,11 +9,6 @@ import api, { normalizeToken } from "../api/axios";
 
 const AuthContext = createContext();
 
-// const normalizeToken = (value) => {
-//   if (!value || typeof value !== "string") return "";
-//   return value.replace(/^Bearer\s+/i, "").trim();
-// };
-
 const isTokenExpired = (token) => {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
@@ -63,7 +58,8 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authReady, setAuthReady] = useState(false);
-  const [sessionExpired, setSessionExpired] = useState(false);
+  // const [sessionExpired, setSessionExpired] = useState(false);
+  const [sessionNotice, setSessionNotice] = useState(null);
 
   const fetchProfile = useCallback(async (userData) => {
     if (!userData) {
@@ -123,6 +119,19 @@ export function AuthProvider({ children }) {
       const storedToken = localStorage.getItem("token");
       const storedRefreshToken = localStorage.getItem("refreshToken");
       const storedUser = localStorage.getItem("user");
+
+      const storedNotice = sessionStorage.getItem("sessionNotice");
+      if (storedNotice) {
+        try {
+          setSessionNotice(JSON.parse(storedNotice));
+        } catch {
+          setSessionNotice({
+            message: "Your session has ended. Please log in again to continue.",
+            type: "expired",
+          });
+        }
+        sessionStorage.removeItem("sessionNotice");
+      }
 
       if (!storedToken || !storedUser) {
         setAuthReady(true);
@@ -187,52 +196,48 @@ export function AuthProvider({ children }) {
     setSessionExpired(false);
     await fetchProfile(userData);
     setAuthReady(true);
+    setSessionNotice(null);
     return { success: true, data: responseData };
   };
 
   const signIn = async (email, password) => {
-    try {
-      const response = await api.post("/auth/login", { email, password });
-      return await persistSession(response.data, email);
-    } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
+  try {
+    const response = await api.post("/auth/login", { email, password });
+    return await persistSession(response.data, email);
+  } catch (error) {
+    console.error("Login error:", error.response?.data || error.message);
 
-      if (error.response?.status === 400 || error.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+    const status = error.response?.status;
+    const backendMessage = error.response?.data?.error;
 
-        // Extract just the message from formats like: 401 UNAUTHORIZED "message here"
-        const raw =
-          error.response?.data?.message ||
-          error.response?.data ||
-          "Invalid email or password";
-
-        const cleaned = String(raw)
-          .replace(/^\d+\s+\w+\s+"?/, "")
-          .replace(/"$/, "")
-          .trim();
-
-        return {
-          success: false,
-          error: cleaned || "Invalid email or password",
-        };
-      }
-      if (error.response?.status === 404) {
-        return {
-          success: false,
-          error: "Login endpoint not found. Check your API URL.",
-        };
-      }
-
+    if (status === 403) {
       return {
         success: false,
-        error:
-          error.response?.data?.message ||
-          error.response?.data?.error ||
-          "Login failed. Please try again.",
+        suspended: true,
+        error: backendMessage || "Your account has been suspended.",
       };
     }
-  };
+
+    if (status === 400 || status === 401) {
+      return {
+        success: false,
+        error: backendMessage || "Invalid email or password",
+      };
+    }
+
+    if (status === 404) {
+      return {
+        success: false,
+        error: "Login endpoint not found. Check your API URL.",
+      };
+    }
+
+    return {
+      success: false,
+      error: backendMessage || "Login failed. Please try again.",
+    };
+  }
+};
 
   const logout = async () => {
     const refreshToken = localStorage.getItem("refreshToken");
@@ -327,8 +332,8 @@ export function AuthProvider({ children }) {
         signIn,
         signUp,
         logout,
-        sessionExpired,
-        setSessionExpired,
+        sessionNotice,
+        setSessionNotice,
         requestPasswordReset,
         signInWithGoogle,
         refreshProfile: () => fetchProfile(user),

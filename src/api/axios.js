@@ -33,12 +33,14 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
-const clearSessionAndRedirect = (message) => {
+const clearSessionAndRedirect = (message, type = "expired") => {
   localStorage.removeItem("token");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("user");
   delete api.defaults.headers.common.Authorization;
-  if (message) sessionStorage.setItem("sessionExpiredMessage", message);
+  if (message) {
+    sessionStorage.setItem("sessionNotice", JSON.stringify({ message, type }));
+  }
   window.location.href = "/";
 };
 
@@ -47,11 +49,24 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const isExpired = error.response?.data?.error === "TOKEN_EXPIRED";
+    const isSuspended =
+      error.response?.status === 403 &&
+      error.response?.data?.error === "ACCOUNT_SUSPENDED";
+    const isAuthEndpoint = /\/auth\/(login|register|google)(\?|$)/.test(
+      originalRequest?.url || ""
+    );
 
-    // TOKEN_EXPIRED 401 — refresh and retry
+    // Suspended — no point retrying, go straight to redirect
+    if (isSuspended) {
+      clearSessionAndRedirect(
+        "Your account has been suspended. Contact support@karmaswap.com to appeal.",
+        "suspended"
+      );
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && isExpired && !originalRequest._retry) {
       if (isRefreshing) {
-        // a refresh is already in flight — queue this request behind it
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then((token) => {
@@ -76,8 +91,12 @@ api.interceptors.response.use(
           { refreshToken }
         );
         const newToken = normalizeToken(data.token);
+        const newRefreshToken = normalizeToken(data.refreshToken);
+
         localStorage.setItem("token", newToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
+        if (newRefreshToken && newRefreshToken !== "undefined" && newRefreshToken !== "null") {
+          localStorage.setItem("refreshToken", newRefreshToken);
+        }
         api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
 
         processQueue(null, newToken);
@@ -85,15 +104,19 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        clearSessionAndRedirect("Your session has expired, please log in again.");
+        const backendMessage = refreshError.response?.data?.error;
+        const wasSuspended = backendMessage === "Your account has been suspended.";
+        clearSessionAndRedirect(
+          backendMessage || "Your session has expired, please log in again.",
+          wasSuspended ? "suspended" : "expired"
+        );
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
     }
 
-    // any other 401 — old behavior, unchanged
-    if (error.response?.status === 401 && !isExpired) {
+    if (error.response?.status === 401 && !isExpired && !isAuthEndpoint) {
       clearSessionAndRedirect();
     }
 
