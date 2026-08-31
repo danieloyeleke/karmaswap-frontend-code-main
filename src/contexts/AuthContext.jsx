@@ -193,7 +193,7 @@ export function AuthProvider({ children }) {
 
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
     setUser(userData);
-    setSessionExpired(false);
+    setSessionNotice(null);
     await fetchProfile(userData);
     setAuthReady(true);
     setSessionNotice(null);
