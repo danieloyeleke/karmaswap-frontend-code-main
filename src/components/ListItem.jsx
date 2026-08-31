@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { createItem } from "../api/items";
 
 const CATEGORIES = [
@@ -36,6 +36,7 @@ export default function ListItem({ onBack, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isImageTooLarge, setIsImageTooLarge] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -62,6 +63,19 @@ export default function ListItem({ onBack, onClose, onSuccess }) {
     setError("");
     setImageFile(file);
     setPreview(URL.createObjectURL(file));
+  };
+
+    const handleRemoveImage = () => {
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
+    setImageFile(null);
+    setPreview(null);
+    setIsImageTooLarge(false);
+    setError("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleConditionChange = (value) => {
@@ -139,9 +153,19 @@ export default function ListItem({ onBack, onClose, onSuccess }) {
           <div className="form-group">
             <label>Item Photo</label>
             {preview ? (
-              <img src={preview} alt="preview" className="preview-img" />
+              <div className="image-preview-wrapper">
+                <img src={preview} alt="preview" className="preview-img" />
+                <button
+                  type="button"
+                  className="btn-secondary image-remove-btn"
+                  onClick={handleRemoveImage}
+                >
+                  Remove Photo
+                </button>
+              </div>
             ) : (
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
