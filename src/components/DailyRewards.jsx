@@ -6,6 +6,7 @@ import {
   claimThirtyDayBonus,
   getClaimsStatus,
 } from "../api/claims";
+import "../styles/DailyRewards.css";
 
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 
@@ -37,16 +38,29 @@ const toNumber = (value, fallback = 0) => {
 
 const toBoolean = (value, fallback = false) => {
   if (typeof value === "boolean") return value;
-  if (typeof value === "string") return value.toLowerCase() === "true" || value === "1";
+  if (typeof value === "string")
+    return value.toLowerCase() === "true" || value === "1";
   if (typeof value === "number") return value === 1;
   return fallback;
 };
 
 // ─── REWARD CARD ─────────────────────────────────────────────────────────────
 
-function RewardCard({ icon: Icon, eyebrow, title, reward, description, disabled, loading, claimed, onClick }) {
+function RewardCard({
+  icon: Icon,
+  eyebrow,
+  title,
+  reward,
+  description,
+  disabled,
+  loading,
+  claimed,
+  onClick,
+}) {
   return (
-    <div className={`dr-card ${claimed ? "dr-card-claimed" : ""} ${!disabled && !claimed ? "dr-card-available" : ""}`}>
+    <div
+      className={`dr-card ${claimed ? "dr-card-claimed" : ""} ${!disabled && !claimed ? "dr-card-available" : ""}`}
+    >
       <div className="dr-card-icon">
         <Icon size={22} strokeWidth={2} />
       </div>
@@ -110,21 +124,31 @@ export default function DailyRewards({ profile, onRewardsUpdated }) {
 
   const weeklyProgress = Math.min((currentStreak / 7) * 100, 100);
 
-  const dailyEligible = useMemo(() =>
-    toBoolean(status.canClaimDaily) || !status.hasClaimedToday,
-    [status.canClaimDaily, status.hasClaimedToday]
+  const dailyEligible = useMemo(
+    () => toBoolean(status.canClaimDaily) || !status.hasClaimedToday,
+    [status.canClaimDaily, status.hasClaimedToday],
   );
 
-  const weeklyEligible = useMemo(() =>
-    toBoolean(status.canClaimSevenDayBonus) ||
-    (currentStreak >= 7 && !status.hasClaimedSevenDayBonus),
-    [currentStreak, status.canClaimSevenDayBonus, status.hasClaimedSevenDayBonus]
+  const weeklyEligible = useMemo(
+    () =>
+      toBoolean(status.canClaimSevenDayBonus) ||
+      (currentStreak >= 7 && !status.hasClaimedSevenDayBonus),
+    [
+      currentStreak,
+      status.canClaimSevenDayBonus,
+      status.hasClaimedSevenDayBonus,
+    ],
   );
 
-  const monthlyEligible = useMemo(() =>
-    toBoolean(status.canClaimThirtyDayBonus) ||
-    (currentStreak >= 30 && !status.hasClaimedThirtyDayBonus),
-    [currentStreak, status.canClaimThirtyDayBonus, status.hasClaimedThirtyDayBonus]
+  const monthlyEligible = useMemo(
+    () =>
+      toBoolean(status.canClaimThirtyDayBonus) ||
+      (currentStreak >= 30 && !status.hasClaimedThirtyDayBonus),
+    [
+      currentStreak,
+      status.canClaimThirtyDayBonus,
+      status.hasClaimedThirtyDayBonus,
+    ],
   );
 
   const normalizeStatus = (raw) => ({
@@ -133,27 +157,38 @@ export default function DailyRewards({ profile, onRewardsUpdated }) {
     currentStreak: toNumber(raw?.currentStreak ?? raw?.current_streak),
     hasClaimedToday: toBoolean(raw?.hasClaimedToday ?? raw?.has_claimed_today),
     hasClaimedSevenDayBonus: toBoolean(
-      raw?.hasClaimedSevenDayBonus ?? raw?.hasClaimed7DayBonus ??
-      raw?.has_claimed_seven_day_bonus ?? raw?.has_claimed_7_day_bonus
+      raw?.hasClaimedSevenDayBonus ??
+        raw?.hasClaimed7DayBonus ??
+        raw?.has_claimed_seven_day_bonus ??
+        raw?.has_claimed_7_day_bonus,
     ),
     hasClaimedThirtyDayBonus: toBoolean(
-      raw?.hasClaimedThirtyDayBonus ?? raw?.hasClaimed30DayBonus ??
-      raw?.has_claimed_thirty_day_bonus ?? raw?.has_claimed_30_day_bonus
+      raw?.hasClaimedThirtyDayBonus ??
+        raw?.hasClaimed30DayBonus ??
+        raw?.has_claimed_thirty_day_bonus ??
+        raw?.has_claimed_30_day_bonus,
     ),
     canClaimDaily: toBoolean(raw?.canClaimDaily ?? raw?.can_claim_daily),
     canClaimSevenDayBonus: toBoolean(
-      raw?.canClaimSevenDayBonus ?? raw?.canClaim7DayBonus ??
-      raw?.can_claim_seven_day_bonus ?? raw?.can_claim_7_day_bonus
+      raw?.canClaimSevenDayBonus ??
+        raw?.canClaim7DayBonus ??
+        raw?.can_claim_seven_day_bonus ??
+        raw?.can_claim_7_day_bonus,
     ),
     canClaimThirtyDayBonus: toBoolean(
-      raw?.canClaimThirtyDayBonus ?? raw?.canClaim30DayBonus ??
-      raw?.can_claim_thirty_day_bonus ?? raw?.can_claim_30_day_bonus
+      raw?.canClaimThirtyDayBonus ??
+        raw?.canClaim30DayBonus ??
+        raw?.can_claim_thirty_day_bonus ??
+        raw?.can_claim_30_day_bonus,
     ),
   });
 
   const loadStatus = async ({ preserveMessage = true } = {}) => {
     setLoading(true);
-    if (!preserveMessage) { setError(""); setSuccess(""); }
+    if (!preserveMessage) {
+      setError("");
+      setSuccess("");
+    }
     try {
       const raw = await getClaimsStatus();
       setStatus(normalizeStatus(raw));
@@ -164,7 +199,9 @@ export default function DailyRewards({ profile, onRewardsUpdated }) {
     }
   };
 
-  useEffect(() => { loadStatus(); }, []);
+  useEffect(() => {
+    loadStatus();
+  }, []);
 
   const runClaim = async (type, action) => {
     setClaimingType(type);
@@ -173,29 +210,36 @@ export default function DailyRewards({ profile, onRewardsUpdated }) {
     try {
       const result = await action();
       // Update status locally first — no full page reload
-      setStatus((prev) => normalizeStatus({
-        ...prev,
-        hasClaimedToday: type === "daily" ? true : prev.hasClaimedToday,
-        hasClaimedSevenDayBonus: type === "weekly" ? true : prev.hasClaimedSevenDayBonus,
-        hasClaimedThirtyDayBonus: type === "monthly" ? true : prev.hasClaimedThirtyDayBonus,
-        currentStreak: type === "daily"
-          ? toNumber(result?.currentStreak ?? prev.currentStreak + 1)
-          : prev.currentStreak,
-      }));
+      setStatus((prev) =>
+        normalizeStatus({
+          ...prev,
+          hasClaimedToday: type === "daily" ? true : prev.hasClaimedToday,
+          hasClaimedSevenDayBonus:
+            type === "weekly" ? true : prev.hasClaimedSevenDayBonus,
+          hasClaimedThirtyDayBonus:
+            type === "monthly" ? true : prev.hasClaimedThirtyDayBonus,
+          currentStreak:
+            type === "daily"
+              ? toNumber(result?.currentStreak ?? prev.currentStreak + 1)
+              : prev.currentStreak,
+        }),
+      );
       // Then background-refresh for accuracy
       loadStatus({ preserveMessage: true });
       // Notify parent without forcing full page reload
       onRewardsUpdated?.(result);
 
       const amount =
-        result?.amountAwarded ?? result?.awardedAmount ??
-        CLAIM_AMOUNT_BY_TYPE[type] ?? 0;
+        result?.amountAwarded ??
+        result?.awardedAmount ??
+        CLAIM_AMOUNT_BY_TYPE[type] ??
+        0;
       setSuccess(
         type === "daily"
           ? `+${amount} Karma claimed! Keep your streak going 🔥`
           : type === "weekly"
-          ? `+${amount} Karma — 7-day streak bonus claimed! 🎉`
-          : `+${amount} Karma — 30-day streak bonus claimed! 🏆`
+            ? `+${amount} Karma — 7-day streak bonus claimed! 🎉`
+            : `+${amount} Karma — 30-day streak bonus claimed! 🏆`,
       );
     } catch (err) {
       setError(readMessage(err, "Unable to process reward claim."));
@@ -237,7 +281,10 @@ export default function DailyRewards({ profile, onRewardsUpdated }) {
           <strong>{Math.min(currentStreak, 7)} / 7 days</strong>
         </div>
         <div className="dr-progress-bar">
-          <div className="dr-progress-fill" style={{ width: `${weeklyProgress}%` }} />
+          <div
+            className="dr-progress-fill"
+            style={{ width: `${weeklyProgress}%` }}
+          />
         </div>
         <StreakDots current={Math.min(currentStreak, 7)} />
       </div>

@@ -218,7 +218,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0;
 }
 
 .trade-role-tag.selling {
@@ -359,7 +359,6 @@
 }
 
 /* ── Chat ── */
-
 .trade-chat {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -537,6 +536,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
+}
+
+.trade-action-panel input[type="file"] {
+  max-width: 100%;
 }
 
 .trade-action-panel h3 {

@@ -16,7 +16,6 @@ import CheckoutEscrowConfirmation from "./components/CheckoutEscrowConfirmation"
 import BuyerEscrowView from "./components/BuyerEscrowView";
 import Profile from "./components/Profile";
 import Social from "./components/Social";
-// import { SellerDashboard } from "./components/SellerDashboard";
 import TransactionComplete from "./components/TransactionComplete";
 import DisputeResolution from "./components/DisputeResolution";
 import AdminLogin from "./components/AdminLogin";
@@ -263,6 +262,12 @@ function AppContent() {
     return shippingPatch;
   }
 
+  const handleLogout = async () => {
+    if (!window.confirm("Log out of Karmaswap?")) return;
+    await logout();
+    navigate("/");
+  };
+
   if (loading) {
     return (
       <div className="app-loading">
@@ -353,6 +358,13 @@ function AppContent() {
             ✨ {profile?.karmaBalance ?? profile?.karma_balance ?? 0}
           </span>
           <NotificationBell />
+          <button
+            className="header-logout-btn"
+            onClick={handleLogout}
+            aria-label="Log out"
+          >
+            <LogOut size={20} />
+          </button>
         </div>
       </div>
 
@@ -494,7 +506,7 @@ function AppContent() {
           onClick={() => navigate("/list-item")}
         >
           <Plus size={24} />
-          <span>List</span>
+          {/* <span>List</span> */}
         </button>
         <button
           className={`tab-btn ${currentPath.startsWith("/trades") ? "active" : ""}`}

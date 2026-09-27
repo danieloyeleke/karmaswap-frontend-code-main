@@ -1,0 +1,1443 @@
+/* =========================================================================
+   Extracted for: Profile.jsx (default export), EditProfileModal, ReferralCard
+   Source order preserved for rules with cascade-order-sensitive duplicates.
+   NOTE: This does NOT include DailyRewards' own styles (.dr-*) — that's a
+   separate imported component and wasn't inlined in the file you shared.
+   ========================================================================= */
+
+/* ---- Design tokens this component depends on ----
+   Assumed to already be loaded globally (not duplicated here).
+   --primary, --primary-hover, --primary-light, --text, --text-light,
+   --border, --surface, --background, --error, --success, --shadow,
+   --shadow-lg, --radius, --radius-sm, --radius-lg, --transition
+
+   ⚠️ The rules below ALSO reference a second, UNDEFINED token family:
+   --bg-card, --bg-secondary, --text-primary, --text-secondary,
+   --text-muted, --color-primary, --color-success, --color-error
+   These do not exist in the :root block you sent me. See notes above.
+*/
+
+:root {
+  --primary: #2d7a3e;
+  --primary-hover: #246330;
+  --primary-light: #e8f5e9;
+  --text: #2c3e50;
+  --text-light: #6c757d;
+  --border: #e0e0e0;
+  --surface: #ffffff;
+  --background: #fafafa;
+  --error: #e74c3c;
+  --success: #27ae60;
+  --shadow: rgba(0, 0, 0, 0.08);
+  --shadow-lg: rgba(0, 0, 0, 0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --transition: 0.2s ease;
+}
+
+/* ── Loading state ── */
+
+.app-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Buttons ── */
+
+.btn-primary {
+  padding: 0.625rem 1.5rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-lg);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 0.625rem 1.5rem;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+  background: var(--background);
+  border-color: var(--primary);
+}
+
+.btn-small {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8125rem;
+}
+
+/* ⚠️ Not defined anywhere: .item-delete-btn */
+
+/* ── Generic messages ── */
+
+.error-message {
+  padding: 0.75rem;
+  background: #fee;
+  border: 1px solid var(--error);
+  border-radius: var(--radius-sm);
+  color: var(--error);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* ── Modal shell (used for both Edit Profile & Transfer modals) ── */
+
+/* First .modal-overlay definition (overridden below — kept for accuracy) */
+.modal-overlay {
+  z-index: 999;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* First .modal-header definition (overridden below — kept for accuracy) */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.modal-close:hover {
+  color: var(--text);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Second .modal-header definition — THIS is the one that wins for padding.
+   (font-size for h3 also gets bumped to 1.5rem here via the h2,h3 selector,
+   but profile-edit-modal-header / transfer-modal-header set their own
+   padding afterward, so in practice this doesn't visibly matter.) */
+.modal-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h2,
+.modal-header h3 {
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Second .modal-overlay definition — THIS is the one that wins (0.45 alpha,
+   not 0.5, vs. the first definition above). */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+/* ── Transfer modal ── */
+
+.transfer-modal-overlay {
+  background: rgba(28, 41, 34, 0.42);
+  backdrop-filter: blur(8px);
+  padding: 1.5rem;
+}
+
+.transfer-modal {
+  width: min(100%, 520px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #ffffff 0%, #fdfdfb 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  box-shadow: 0 24px 70px rgba(36, 54, 43, 0.22);
+  overflow: hidden;
+  animation: slideUp 0.25s ease;
+}
+
+.transfer-modal-header {
+  padding: 1.75rem 1.75rem 1.25rem;
+  border-bottom: 1px solid rgba(45, 122, 62, 0.12);
+  align-items: flex-start;
+}
+
+.transfer-modal-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  margin-bottom: 0.85rem;
+  border-radius: 999px;
+  background: #eef8f0;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.transfer-modal-subtitle {
+  margin-top: 0.35rem;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.transfer-modal .modal-close {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(45, 122, 62, 0.14);
+  border-radius: 50%;
+  background: #f8fbf8;
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform var(--transition),
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.transfer-modal .modal-close:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #eef8f0;
+  border-color: rgba(45, 122, 62, 0.25);
+}
+
+.transfer-modal .modal-close:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.transfer-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem 1.75rem;
+  overflow-y: auto; /* add */
+  min-height: 0; /* add — required for flex children to actually shrink and scroll instead of overflowing their parent */
+}
+
+.transfer-balance-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(135deg, #f4fbf5 0%, #ffffff 100%);
+  border: 1px solid rgba(45, 122, 62, 0.12);
+  border-radius: 18px;
+}
+
+.transfer-balance-label {
+  color: var(--text-light);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.transfer-balance-card strong {
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+.transfer-id-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1rem 1.1rem;
+  background: #ffffff;
+  border: 1px solid rgba(45, 122, 62, 0.14);
+  border-radius: 18px;
+}
+
+.transfer-id-card code {
+  width: fit-content;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  background: #f4fbf5;
+  color: var(--primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.transfer-input-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.transfer-input-label input {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1px solid #d8e5db;
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--text);
+  font-size: 0.95rem;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+}
+
+.transfer-input-label input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(45, 122, 62, 0.12);
+}
+
+.transfer-input-label input:disabled {
+  background: #f4f6f4;
+  cursor: not-allowed;
+}
+
+.transfer-input-with-action {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.transfer-input-with-action input {
+  flex: 1;
+}
+
+.transfer-input-with-action .btn-secondary {
+  min-width: 78px;
+  border-radius: 14px;
+  background: #f7faf7;
+}
+
+.transfer-helper-text {
+  color: var(--text-light);
+  font-size: 0.84rem;
+}
+
+.transfer-modal-footer {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .transfer-modal-header,
+  .transfer-modal-body {
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+  }
+
+  .transfer-balance-card,
+  .transfer-modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .transfer-input-with-action {
+    flex-direction: column;
+  }
+}
+
+/* ── "My Trades" empty state, reused for empty listings/claimed tabs ── */
+
+.trades-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.trades-empty p {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.trades-empty span {
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+/* =========================================================================
+   PROFILE PAGE
+   ========================================================================= */
+
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.profile-header-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: 0 4px 12px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.profile-header-top {
+  display: flex;
+  gap: 1.75rem;
+  align-items: flex-start;
+}
+
+.profile-avatar-wrap {
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profile-avatar-img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  border: 3px solid white;
+  box-shadow: 0 0 0 3px var(--primary);
+  display: block;
+}
+
+.profile-avatar-placeholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  box-shadow: 0 0 0 3px var(--primary);
+}
+
+.profile-header-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.profile-header-name-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.profile-header-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.profile-header-name-row h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.profile-edit-btn {
+  padding: 0.4rem 0.9rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.profile-edit-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.profile-fullname {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin: 0;
+}
+
+.profile-location {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--primary);
+}
+
+.profile-bio {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0.25rem 0 0;
+}
+
+.profile-account-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #dbe8de;
+  border-radius: 999px;
+  background: #f7fbf7;
+  width: fit-content;
+}
+
+.profile-account-id-label {
+  color: var(--text-light);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-account-id code {
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.profile-account-id-copy {
+  padding: 0.25rem 0.65rem;
+  border: 1px solid rgba(45, 122, 62, 0.18);
+  border-radius: 999px;
+  background: white;
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.profile-account-id-copy:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+}
+
+.profile-account-id-copy:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(5, 1fr);
+  gap: 0.75rem;
+}
+
+.profile-stat-card {
+  padding: 1rem 0.75rem;
+  background: var(--background);
+  border-radius: var(--radius);
+  text-align: center;
+  border: 1px solid var(--border);
+  transition: box-shadow var(--transition);
+}
+
+.profile-stat-card.primary {
+  background: var(--primary);
+  color: white;
+  border-color: transparent;
+}
+
+.profile-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  line-height: 1;
+}
+
+.profile-stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.75;
+  line-height: 1.3;
+}
+
+.profile-stat-card:hover {
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.profile-tabs {
+  display: flex;
+  gap: 0.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.35rem;
+}
+
+.profile-tabs button {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.875rem;
+}
+
+.profile-tabs button:hover {
+  background: var(--background);
+  color: var(--text);
+}
+
+.profile-tabs button.active {
+  background: var(--primary);
+  color: white;
+}
+
+.profile-transfer-btn {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.profile-transfer-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.profile-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  min-height: 300px;
+}
+
+/* ⚠️ Not defined anywhere: .items-list (wraps the tab content in your JSX) */
+/* ⚠️ Not defined anywhere: .trade-detail-error (used for "Profile not found") */
+/* ⚠️ Not defined anywhere: .status-badge / .status-{status} */
+
+/* ── Item Row — View Mode ──
+   ⚠️ Uses --bg-card (undefined). See token notes at top of file. */
+.item-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+}
+
+.item-row:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.item-row-inner {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+}
+
+.item-row-image {
+  width: 120px;
+  min-width: 120px;
+  height: 120px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 0;
+}
+
+.item-row-body {
+  flex: 1;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* ⚠️ Not defined anywhere: .item-row-info (used by the CLAIMED tab instead
+   of .item-row-body — different, unstyled structure) */
+
+.item-row-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.item-row-title {
+  /* ⚠️ color: var(--text-primary) is undefined, no fallback */
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-row-meta {
+  /* ⚠️ color: var(--text-muted) is undefined, no fallback */
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.item-row-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.item-row-karma {
+  /* ⚠️ color: var(--text-secondary) is undefined, no fallback */
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.item-row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Item Row — Edit Mode ── */
+.item-row.editing {
+  /* ⚠️ border-color: var(--color-primary) is undefined, no fallback */
+  border-color: var(--color-primary);
+}
+
+.item-edit-form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.item-edit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.item-edit-title-preview {
+  /* ⚠️ color: var(--text-secondary) is undefined, no fallback */
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.item-edit-badge {
+  /* ⚠️ Uses --color-primary in color-mix() with no fallback — background
+     is likely to render as fully transparent */
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.item-edit-label {
+  /* ⚠️ color: var(--text-muted) is undefined, no fallback */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.item-edit-input {
+  /* ⚠️ background: var(--bg-secondary), color: var(--text-primary) — both
+     undefined, no fallback */
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.item-edit-input:focus {
+  /* ⚠️ border-color: var(--color-primary) is undefined, no fallback —
+     focus ring effectively invisible */
+  border-color: var(--color-primary);
+}
+
+.item-edit-textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.item-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.item-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 480px) {
+  .item-row-image {
+    width: 90px;
+    min-width: 90px;
+    height: 90px;
+  }
+
+  .item-edit-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .profile-tabs button {
+    padding: 0.55rem 0.4rem;
+    font-size: 0.72rem;
+  }
+}
+
+/* ── Referral Card ──
+   ⚠️ Same undefined --*-primary / --bg-* / --text-* token issue throughout. */
+.referral-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.referral-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.referral-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.referral-card-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.referral-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.referral-card-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+.referral-code-badge {
+  /* ⚠️ color-mix() with undefined --color-primary — background likely
+     renders transparent */
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  align-self: center;
+}
+
+.referral-link-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  flex-wrap: wrap;
+}
+
+.referral-link-text {
+  flex: 1;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  font-family: monospace;
+}
+
+.referral-copy-btn,
+.referral-share-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  transition: opacity 0.15s;
+}
+
+.referral-copy-btn {
+  background: var(--primary);
+  color: #fff;
+}
+
+.referral-share-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.referral-copy-btn:hover,
+.referral-share-btn:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 480px) {
+  .referral-link-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .referral-link-text {
+    white-space: nowrap; /* was: normal + word-break */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .referral-copy-btn,
+  .referral-share-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .referral-link-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+}
+/* ── Activity tab ──
+   ⚠️ .activity-time / .activity-karma / .activity-karma.earned / .spent
+   are each declared twice below (mirroring the source file). Per normal
+   CSS cascade, later declarations of the SAME property win; properties
+   not redeclared the second time still carry over from the first. */
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon-wrap {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.activity-icon-wrap.earned {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.activity-icon-wrap.spent {
+  background: #fee;
+  color: var(--error);
+}
+
+.activity-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.activity-info p {
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+.activity-karma {
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.activity-karma.earned {
+  color: var(--primary);
+}
+
+.activity-karma.spent {
+  color: var(--error);
+}
+
+.activity-description {
+  /* ⚠️ color: var(--text-primary) undefined, no fallback */
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.activity-counterparty {
+  /* ⚠️ color: var(--text-muted) undefined, no fallback */
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* .activity-time redeclared — this color wins over --text-light above.
+   ⚠️ var(--text-muted) undefined, no fallback. */
+.activity-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.activity-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* .activity-karma redeclared — font-size 1rem wins over 0.95rem above;
+   flex-shrink: 0 from the first rule still applies. */
+.activity-karma {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* These win over the plain --primary/--error rules above. Both have
+   fallbacks, so they'll render fine (green/red) even without the
+   custom properties defined. */
+.activity-karma.earned {
+  color: var(--color-success, #22c55e);
+}
+.activity-karma.spent {
+  color: var(--color-error, #ef4444);
+}
+
+.activity-balance {
+  /* ⚠️ color: var(--text-muted) undefined, no fallback */
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* =========================================================================
+   EDIT PROFILE MODAL
+   ========================================================================= */
+
+.profile-edit-modal {
+  width: min(100%, 520px);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 70px rgba(36, 54, 43, 0.22);
+  overflow: hidden;
+  animation: slideUp 0.25s ease;
+}
+
+.profile-edit-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-edit-modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.profile-edit-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.profile-edit-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.profile-edit-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-edit-avatar {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  background: var(--primary);
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--primary-light);
+}
+
+.profile-edit-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-edit-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.profile-edit-avatar:hover .profile-edit-avatar-overlay {
+  opacity: 1;
+}
+
+.profile-edit-avatar-hint {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin: 0;
+}
+
+.profile-edit-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.profile-edit-input {
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 0.9rem;
+  background: var(--background);
+  color: var(--text);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-edit-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.profile-edit-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-edit-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.profile-edit-location {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* =========================================================================
+   RESPONSIVE — Profile page
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  .profile-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-header-card {
+    padding: 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .profile-header-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .profile-header-name-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .profile-header-actions-row {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profile-header-actions-row .profile-edit-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .profile-location {
+    justify-content: center;
+  }
+
+  .profile-account-id {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-stat-value {
+    font-size: 1.25rem;
+  }
+
+  .profile-header-actions {
+    flex-direction: column;
+  }
+
+  .profile-header-actions .btn-primary,
+  .profile-header-actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profile-tabs button {
+    font-size: 0.78rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .profile-content {
+    padding: 1rem;
+  }
+
+  .profile-edit-modal-body {
+    padding: 1rem;
+    max-height: 80vh;
+  }
+
+  .profile-edit-modal-footer {
+    flex-direction: column;
+  }
+
+  .profile-edit-modal-footer .btn-primary,
+  .profile-edit-modal-footer .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .activity-item {
+    gap: 0.65rem;
+    padding: 0.75rem;
+  }
+}

@@ -67,7 +67,11 @@ export const mapEscrowToOrder = (payload = {}, fallback = {}) => {
   const normalizeUrl = (url) => {
     if (!url) return "";
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    return `${API_ORIGIN}/uploads/${url}`;
+
+    // strip any leading slash, then strip a leading "uploads/" if the backend already included it
+    const cleaned = url.replace(/^\/+/, "").replace(/^uploads\//, "");
+
+    return `${API_ORIGIN}/uploads/${cleaned}`;
   };
 
   return {

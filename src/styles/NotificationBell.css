@@ -1,0 +1,307 @@
+/* ── Notification Bell ── */
+
+.notif-bell-container {
+  position: relative;
+}
+
+.notif-bell-btn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--background);
+  border: none;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.notif-bell-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.notif-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  background: var(--error);
+  color: white;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ── Dropdown ── */
+
+.notif-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 340px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px var(--shadow-lg);
+  overflow: hidden;
+  z-index: 200;
+}
+
+.notif-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.notif-mark-all {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.notif-mark-all:hover {
+  text-decoration: underline;
+}
+
+.notif-dropdown-list {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.notif-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-light);
+  font-size: 0.875rem;
+}
+
+.notif-empty p {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text);
+}
+
+.notif-empty span {
+  font-size: 0.8rem;
+}
+
+/* ── Notification Item ── */
+
+.notif-item {
+  display: flex;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+  transition: background var(--transition);
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item.unread {
+  background: var(--primary-light);
+}
+
+.notif-item.clickable {
+  cursor: pointer;
+}
+
+.notif-item.clickable:hover {
+  background: var(--background);
+}
+
+.notif-item.unread.clickable:hover {
+  background: #d9efdb;
+}
+
+.notif-item-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notif-icon-escrow {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.notif-icon-dispatched {
+  background: #e9f1ff;
+  color: #1a3f8f;
+}
+
+.notif-icon-success {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.notif-icon-cancelled {
+  background: #fee;
+  color: #c0392b;
+}
+
+.notif-icon-abandoned {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.notif-icon-social {
+  background: #f5f0ff;
+  color: #5e35b1;
+}
+
+.notif-icon-karma {
+  background: #fff6e0;
+  color: #8a5f00;
+}
+
+.notif-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-item-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.notif-item-message {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  line-height: 1.4;
+  margin: 0.15rem 0 0;
+}
+
+.notif-item-time {
+  font-size: 0.7rem;
+  color: #888;
+  margin: 0.25rem 0 0;
+}
+
+.notif-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: 4px;
+}
+
+.notif-dropdown-footer {
+  padding: 0.7rem 1rem;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.notif-dropdown-footer:hover {
+  background: var(--background);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 480px) {
+  .notif-dropdown {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    border-radius: 0;
+    height: 100vh;
+  }
+
+  .notif-dropdown-header {
+    padding: 1rem;
+  }
+
+  .notif-dropdown-list {
+    max-height: calc(100vh - 110px);
+  }
+}
+
+.notif-mobile-backdrop {
+  display: none;
+}
+
+.notif-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.notif-close-btn {
+  display: none; /* desktop: dropdown closes via outside-click already */
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 2px;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .notif-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .notif-dropdown {
+    position: fixed;
+    top: 64px;
+    right: 12px;
+    left: 60px;
+    max-height: 65vh;
+    width: auto;
+    background: var(--surface);   /* ← add this */
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;                /* ← also make explicit, don't rely on source order */
+  }
+
+  .notif-dropdown-list {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .notif-close-btn {
+    display: flex;
+  }
+}
