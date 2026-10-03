@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import TrustBadge from "./TrustBadge";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import "../styles/ItemDetail.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const DELIVERY_METHODS = [
   {
@@ -55,6 +56,7 @@ export default function ItemDetail({ item, onBack, onStartCheckout }) {
   const [deliveryMethod, setDeliveryMethod] = useState("meetup");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const trustLevel = useMemo(() => getTrustLevel(item), [item]);
   const ownerName = useMemo(() => getOwnerName(item), [item]);
@@ -78,6 +80,10 @@ export default function ItemDetail({ item, onBack, onStartCheckout }) {
   const canAfford = karmaBalance >= karmaValue;
 
   const handleStartCheckout = () => {
+    if (!user) {
+      navigate("/signup", { state: { from: location } });
+      return;
+    }
     if (isOwner) {
       setError("You cannot start escrow on your own listing.");
       return;
@@ -217,7 +223,7 @@ export default function ItemDetail({ item, onBack, onStartCheckout }) {
                     </span>
                   </label>
                 ))}
-              </div>              
+              </div>
 
               {error && <div className="error-message">{error}</div>}
 
@@ -227,7 +233,7 @@ export default function ItemDetail({ item, onBack, onStartCheckout }) {
                 </div>
               ) : (
                 <>
-                  {!canAfford && (
+                  {user && !canAfford && (
                     <div className="detail-afford-warning">
                       You need{" "}
                       <strong>{karmaValue - karmaBalance} more karma</strong> to
@@ -237,9 +243,9 @@ export default function ItemDetail({ item, onBack, onStartCheckout }) {
                   <button
                     className="escrow-btn detail-escrow-btn"
                     onClick={handleStartCheckout}
-                    disabled={!canAfford}
+                    disabled={user ? !canAfford : false}
                   >
-                    Review & Lock Karma
+                    {user ? "Review & Lock Karma" : "Log In to Start Trade"}
                   </button>
                 </>
               )}

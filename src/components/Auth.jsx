@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { createPortal } from "react-dom";
 import { NIGERIA_STATES, buildLocation } from "../utils/nigeriaLocations";
 import { TERMS_SECTIONS } from "../data/termsContent";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const USERNAME_REGEX = /^[a-zA-Z0-9_]+$/;
 
@@ -39,6 +40,9 @@ export default function Auth() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     signIn,
@@ -108,6 +112,14 @@ export default function Auth() {
           } else {
             setError(result?.error || "Login failed. Please try again.");
           }
+        } else {
+          const from = location.state?.from;
+          navigate(
+            from ? `${from.pathname}${from.search || ""}` : "/marketplace",
+            {
+              replace: true,
+            },
+          );
         }
       } else {
         // ── Validation first ──
@@ -195,6 +207,14 @@ export default function Auth() {
       const result = await signInWithGoogle(credential);
       if (!result?.success) {
         setError(result?.error || "Google authentication failed.");
+      } else {
+        const from = location.state?.from;
+        navigate(
+          from ? `${from.pathname}${from.search || ""}` : "/marketplace",
+          {
+            replace: true,
+          },
+        );
       }
     } catch (err) {
       setError(err?.message || "Google authentication failed.");

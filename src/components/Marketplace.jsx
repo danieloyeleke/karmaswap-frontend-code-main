@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import ItemCard from "./ItemCard";
 import { getItems } from "../api/items";
-import api from "../api/axios"; // ← uncomment this
+import api from "../api/axios";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const API_ORIGIN =
   import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:8080";
@@ -41,6 +42,9 @@ export default function Marketplace({ onItemClick, refreshKey = 0 }) {
   const [searchLoading, setSearchLoading] = useState(false);
   const searchTimeout = useRef(null);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
     fetchItems();
   }, [filter, refreshKey, profile]);
@@ -63,6 +67,10 @@ export default function Marketplace({ onItemClick, refreshKey = 0 }) {
   }, [profile]);
 
   const handleFollow = async (ownerId) => {
+    if (!profile) {
+      navigate("/signup", { state: { from: location } });
+      return;
+    }
     if (!ownerId) return;
     const id = String(ownerId);
     const isFollowing = followingIds.has(id);

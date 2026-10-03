@@ -9,6 +9,18 @@ const normalizeToken = (value) => {
   return value.replace(/^Bearer\s+/i, "").trim();
 };
 
+// GET /items, GET /items/search, and GET /items/{id} are public.
+// GET /items/my, and any non-GET on /items or /items/{id}, stay gated.
+const isPublicItemsRoute = (method, url) => {
+  if (method?.toUpperCase() !== "GET" || !url) return false;
+
+  const path = url.split("?")[0];
+  if (path === "/items" || path === "/items/search") return true;
+
+  const segments = path.split("/").filter(Boolean);
+  return segments.length === 2 && segments[0] === "items" && segments[1] !== "my";
+};
+
 api.interceptors.request.use(
   (config) => {
     const storedToken = localStorage.getItem("token");
@@ -44,6 +56,13 @@ const clearSessionAndRedirect = (message, type = "expired") => {
   window.location.href = "/";
 };
 
+// Refresh failed and the original request was to a public route: clear the
+// dead token and retry anonymously instead of bouncing a guest to login.
+const retryAnonymously = (originalRequest) => {
+  delete originalRequest.headers.Authorization;
+  return api(originalRequest);
+};
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -54,6 +73,10 @@ api.interceptors.response.use(
       error.response?.data?.error === "ACCOUNT_SUSPENDED";
     const isAuthEndpoint = /\/auth\/(login|register|google)(\?|$)/.test(
       originalRequest?.url || ""
+    );
+    const isPublicRoute = isPublicItemsRoute(
+      originalRequest?.method,
+      originalRequest?.url
     );
 
     // Suspended — no point retrying, go straight to redirect
@@ -81,6 +104,12 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) {
         isRefreshing = false;
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        delete api.defaults.headers.common.Authorization;
+        if (isPublicRoute) {
+          return retryAnonymously(originalRequest);
+        }
         clearSessionAndRedirect("Your session has expired, please log in again.");
         return Promise.reject(error);
       }
@@ -104,6 +133,16 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
+
+        if (isPublicRoute) {
+          isRefreshing = false;
+          localStorage.removeItem("token");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("user");
+          delete api.defaults.headers.common.Authorization;
+          return retryAnonymously(originalRequest);
+        }
+
         const backendMessage = refreshError.response?.data?.error;
         const wasSuspended = backendMessage === "Your account has been suspended.";
         clearSessionAndRedirect(
@@ -116,7 +155,7 @@ api.interceptors.response.use(
       }
     }
 
-    if (error.response?.status === 401 && !isExpired && !isAuthEndpoint) {
+    if (error.response?.status === 401 && !isExpired && !isAuthEndpoint && !isPublicRoute) {
       clearSessionAndRedirect();
     }
 

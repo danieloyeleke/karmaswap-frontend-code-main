@@ -50,6 +50,16 @@ const readStoredOrder = (user) => {
   }
 };
 
+// Gated routes redirect guests to /signup, stashing the attempted location
+// so Auth.jsx can send them back here after a successful login/signup.
+function ProtectedRoute({ user, children }) {
+  const location = useLocation();
+  if (!user) {
+    return <Navigate to="/signup" state={{ from: location }} replace />;
+  }
+  return children;
+}
+
 function AppContent() {
   const [hasTradeUpdates, setHasTradeUpdates] = useState(false);
   const { user, profile, loading, logout, authReady } = useAuth();
@@ -277,7 +287,12 @@ function AppContent() {
     );
   }
 
-  if (!user) return <Auth />;
+  // Signup/login is a full-page flow with no app chrome, same as before —
+  // just reached via a route now instead of replacing the whole tree
+  // unconditionally for every logged-out visitor on every path.
+  if (location.pathname === "/signup") {
+    return <Auth />;
+  }
 
   const currentPath = location.pathname;
 
@@ -328,22 +343,33 @@ function AppContent() {
             >
               <Plus size={14} /> List Item
             </button>
-            <span className="nav-karma">
-              ✨ {profile?.karmaBalance ?? profile?.karma_balance ?? 0}
-            </span>
-            <NotificationBell />
-            <button
-              className={`nav-avatar ${currentPath === "/profile" ? "active" : ""}`}
-              onClick={() => navigate("/profile")}
-              title={profile?.username || user?.email || "Profile"}
-            >
-              {(profile?.username || profile?.email || user?.email || "U")
-                .charAt(0)
-                .toUpperCase()}
-            </button>
-            <button className="btn-secondary nav-logout-btn" onClick={logout}>
-              <LogOut size={16} /> Logout
-            </button>
+            {user ? (
+              <>
+                <span className="nav-karma">
+                  ✨ {profile?.karmaBalance ?? profile?.karma_balance ?? 0}
+                </span>
+                <NotificationBell />
+                <button
+                  className={`nav-avatar ${currentPath === "/profile" ? "active" : ""}`}
+                  onClick={() => navigate("/profile")}
+                  title={profile?.username || user?.email || "Profile"}
+                >
+                  {(profile?.username || profile?.email || user?.email || "U")
+                    .charAt(0)
+                    .toUpperCase()}
+                </button>
+                <button className="btn-secondary nav-logout-btn" onClick={logout}>
+                  <LogOut size={16} /> Logout
+                </button>
+              </>
+            ) : (
+              <button
+                className="btn-primary nav-signup-btn"
+                onClick={() => navigate("/signup", { state: { from: location } })}
+              >
+                Sign Up
+              </button>
+            )}
           </div>
         </div>
       </nav>
@@ -354,23 +380,36 @@ function AppContent() {
           <span>Karmaswap</span>
         </div>
         <div className="mobile-header-actions">
-          <span className="mobile-karma-balance">
-            ✨ {profile?.karmaBalance ?? profile?.karma_balance ?? 0}
-          </span>
-          <NotificationBell />
-          <button
-            className="header-logout-btn"
-            onClick={handleLogout}
-            aria-label="Log out"
-          >
-            <LogOut size={20} />
-          </button>
+          {user ? (
+            <>
+              <span className="mobile-karma-balance">
+                ✨ {profile?.karmaBalance ?? profile?.karma_balance ?? 0}
+              </span>
+              <NotificationBell />
+              <button
+                className="header-logout-btn"
+                onClick={handleLogout}
+                aria-label="Log out"
+              >
+                <LogOut size={20} />
+              </button>
+            </>
+          ) : (
+            <button
+              className="btn-primary mobile-signup-btn"
+              onClick={() => navigate("/signup", { state: { from: location } })}
+            >
+              Sign Up
+            </button>
+          )}
         </div>
       </div>
 
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Navigate to="/marketplace" replace />} />
+
+          {/* Public — reachable without an account */}
           <Route
             path="/marketplace"
             element={
@@ -394,94 +433,146 @@ function AppContent() {
               )
             }
           />
+
+          {/* Gated — redirect to /signup if logged out, bounce back on success */}
           <Route
             path="/checkout"
             element={
-              checkoutState?.item ? (
-                <CheckoutEscrowConfirmation
-                  item={checkoutState.item}
-                  deliveryMethod={checkoutState.deliveryMethod}
-                  onBack={() => navigate("/item-detail")}
-                  onConfirmed={(order) => {
-                    setActiveOrder(order);
-                    logSellerAlert(checkoutState, order);
-                    upsertSellerOrder(order);
-                    setMarketplaceRefreshKey((v) => v + 1);
-                    navigate("/order-tracking");
-                  }}
-                />
-              ) : (
-                <Navigate to="/marketplace" replace />
-              )
+              <ProtectedRoute user={user}>
+                {checkoutState?.item ? (
+                  <CheckoutEscrowConfirmation
+                    item={checkoutState.item}
+                    deliveryMethod={checkoutState.deliveryMethod}
+                    onBack={() => navigate("/item-detail")}
+                    onConfirmed={(order) => {
+                      setActiveOrder(order);
+                      logSellerAlert(checkoutState, order);
+                      upsertSellerOrder(order);
+                      setMarketplaceRefreshKey((v) => v + 1);
+                      navigate("/order-tracking");
+                    }}
+                  />
+                ) : (
+                  <Navigate to="/marketplace" replace />
+                )}
+              </ProtectedRoute>
             }
           />
           <Route
             path="/order-tracking"
             element={
-              activeOrder ? (
-                <Navigate
-                  to={`/trades/${activeOrder.escrowId || activeOrder.id}`}
-                  replace
-                />
-              ) : (
-                <Navigate to="/marketplace" replace />
-              )
+              <ProtectedRoute user={user}>
+                {activeOrder ? (
+                  <Navigate
+                    to={`/trades/${activeOrder.escrowId || activeOrder.id}`}
+                    replace
+                  />
+                ) : (
+                  <Navigate to="/marketplace" replace />
+                )}
+              </ProtectedRoute>
             }
           />
           <Route
             path="/transaction-complete"
             element={
-              activeOrder ? (
-                <TransactionComplete
-                  order={activeOrder}
-                  onBack={() => navigate("/marketplace")}
-                  onRate={(rating) =>
-                    setActiveOrder((prev) =>
-                      prev ? { ...prev, sellerRating: rating } : prev,
-                    )
-                  }
-                />
-              ) : (
-                <Navigate to="/marketplace" replace />
-              )
+              <ProtectedRoute user={user}>
+                {activeOrder ? (
+                  <TransactionComplete
+                    order={activeOrder}
+                    onBack={() => navigate("/marketplace")}
+                    onRate={(rating) =>
+                      setActiveOrder((prev) =>
+                        prev ? { ...prev, sellerRating: rating } : prev,
+                      )
+                    }
+                  />
+                ) : (
+                  <Navigate to="/marketplace" replace />
+                )}
+              </ProtectedRoute>
             }
           />
-          <Route path="/dispute/:escrowId" element={<DisputeResolution />} />
+          <Route
+            path="/dispute/:escrowId"
+            element={
+              <ProtectedRoute user={user}>
+                <DisputeResolution />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/social"
-            element={<Social onItemClick={openItemDetail} />}
+            element={
+              <ProtectedRoute user={user}>
+                <Social onItemClick={openItemDetail} />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/trades" element={<MyTrades />} />
-          <Route path="/trades/:escrowId" element={<TradeDetail />} />
+          <Route
+            path="/trades"
+            element={
+              <ProtectedRoute user={user}>
+                <MyTrades />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trades/:escrowId"
+            element={
+              <ProtectedRoute user={user}>
+                <TradeDetail />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={
-              <Profile
-                activeOrder={activeOrder}
-                onOpenOrderTracking={() => {
-                  if (activeOrder)
-                    navigate(
-                      `/trades/${activeOrder.escrowId || activeOrder.id}`,
-                    );
-                }}
-              />
+              <ProtectedRoute user={user}>
+                <Profile
+                  activeOrder={activeOrder}
+                  onOpenOrderTracking={() => {
+                    if (activeOrder)
+                      navigate(
+                        `/trades/${activeOrder.escrowId || activeOrder.id}`,
+                      );
+                  }}
+                />
+              </ProtectedRoute>
             }
           />
           <Route
             path="/list-item"
             element={
-              <ListItem
-                onBack={() => navigate("/marketplace")}
-                onSuccess={() => {
-                  setMarketplaceRefreshKey((v) => v + 1);
-                  navigate("/marketplace");
-                }}
-              />
+              <ProtectedRoute user={user}>
+                <ListItem
+                  onBack={() => navigate("/marketplace")}
+                  onSuccess={() => {
+                    setMarketplaceRefreshKey((v) => v + 1);
+                    navigate("/marketplace");
+                  }}
+                />
+              </ProtectedRoute>
             }
           />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute user={user}>
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/:username"
+            element={
+              <ProtectedRoute user={user}>
+                <PublicProfile />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="*" element={<Navigate to="/marketplace" replace />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/profile/:username" element={<PublicProfile />} />
         </Routes>
       </main>
 
@@ -520,7 +611,7 @@ function AppContent() {
         </button>
         <button
           className={`tab-btn ${currentPath === "/profile" ? "active" : ""}`}
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate(user ? "/profile" : "/signup")}
         >
           <span className="tab-avatar">
             {(profile?.username || user?.email || "U").charAt(0).toUpperCase()}
